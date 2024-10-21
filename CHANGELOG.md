@@ -34,6 +34,12 @@
 - https://supabase.com/dashboard/project/kmhjxwhamrskryebsqbm/auth/url-configuration URL muss hinzugefügt werden
 - GGF Datenschutzerklärung und Nutzungsbedingungen sollten entsprechend angepasst werden
 - Beim Hinzufügen von domains unter https://supabase.com/dashboard/project/kmhjxwhamrskryebsqbm/auth/url-configuration muss man darauf achten dass der `/` am ende da ist
-  - https://*.minimalistdjango.com/
-  - https://*links-minimalistdjango.netlify.app/
+  - `https://*.minimalistdjango.com/`
+  - `https://*links-minimalistdjango.netlify.app`
     - erlaubt auch test subdomains sich zu registrieren
+
+## Bucket upload
+
+- ein bucket erstellt, und permissions auf ein ordner gegeben für alle authentifizierten user. hat soweit gepasst, ich habe nur nicht den initialisierten supabase client verwendet, deshalb war ich nicht authentifiziert.
+  und die mehr restrictive policy hätte es wohlmöglich auch getan
+-
