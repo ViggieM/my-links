@@ -18,8 +18,22 @@
   - sendgrid lässt mich keine API key einrichten?
     - doch, es erstellt es: https://app.sendgrid.com/settings/api_keys aber ich kann es scheinbar nicht verwenden. Das sollte ich nochmal mit python testen eventuell
 
+## Netlify deployment
+
 - ich könnte auch netlify einrichten dass sich user über oauth authentifizieren
   - https://app.netlify.com/sites/splendid-hummingbird-a9d52f/configuration/access#oauth
 - https://kit.svelte.dev/docs/adapter-auto funktioniert für netlify automatisch, wäre aber gut zu ändern auf @sveltejs/adapter-netlify for Netlify
 - Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and many not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.
 - das problem war dass ich in supabase die redirect url konfigurieren musste: https://supabase.com/dashboard/project/kmhjxwhamrskryebsqbm/auth/url-configuration
+
+### custom domains
+
+- kann ich nicht machen, da es nicht im free plan ist https://supabase.com/docs/guides/platform/custom-domains
+  - aber ich kann die seite auf links.minimalistdjango.com hosten
+- DNS record muss hinzugefügt werden
+- https://supabase.com/dashboard/project/kmhjxwhamrskryebsqbm/auth/url-configuration URL muss hinzugefügt werden
+- GGF Datenschutzerklärung und Nutzungsbedingungen sollten entsprechend angepasst werden
+- Beim Hinzufügen von domains unter https://supabase.com/dashboard/project/kmhjxwhamrskryebsqbm/auth/url-configuration muss man darauf achten dass der `/` am ende da ist
+  - https://*.minimalistdjango.com/
+  - https://*links-minimalistdjango.netlify.app/
+    - erlaubt auch test subdomains sich zu registrieren
