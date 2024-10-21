@@ -1,7 +1,7 @@
 <script>
 	export let data;
 	export let form;
-	$: ({ countries } = data);
+	$: ({ countries, videos } = data);
 </script>
 
 <h1>Links</h1>
@@ -19,5 +19,15 @@
 <ul>
 	{#each countries as country}
 		<li>{country.name}</li>
+	{/each}
+</ul>
+
+<ul>
+	{#each videos as video}
+		<li>
+			<video controls width="250px">
+				<source src={video.signedUrl} type="video/mp4" />
+			</video>
+		</li>
 	{/each}
 </ul>
