@@ -43,3 +43,20 @@
 - ein bucket erstellt, und permissions auf ein ordner gegeben für alle authentifizierten user. hat soweit gepasst, ich habe nur nicht den initialisierten supabase client verwendet, deshalb war ich nicht authentifiziert.
   und die mehr restrictive policy hätte es wohlmöglich auch getan
 -
+
+## Planung tabellen
+
+- Eine Tabelle für Blobs
+  - nur ich kann Elemente hinzufügen
+  - andere user können nur sehen, wenn die items einen bestimmten Tag haben
+    - z.B. minimalistdjango für alle
+    - Salsa/tanzen nur für bestimmte User
+      - auch sub tags von einem tag muss beachtet werden
+    - alle anderen kann nur ich sehen
+  - Es kann nur eine mediendatei hochgeladen werden pro blob. Das liegt daran dass es unwahrscheinlich ist dass man zwei hochladen muss, und KISS
+- Eine Tabelle für Tags
+  - id, name und parent_id
+- Eine Tabelle für Tags und user uuid
+  - damit kann man sicherstellen wer welche tags sehen darf
+  - nicht alle tags dürfen für alle user sichtbar sein
+- Erstmal keine Verbindungen zwischen Blobs

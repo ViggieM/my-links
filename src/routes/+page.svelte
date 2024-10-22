@@ -1,33 +1,25 @@
 <script>
 	export let data;
-	export let form;
-	$: ({ countries, videos } = data);
+	$: ({ supabase, user, blobs } = data);
+
+  $: logout = async () => {
+		const { error } = await supabase.auth.signOut();
+		if (error) {
+			console.error(error);
+		}
+	};
 </script>
 
-<h1>Links</h1>
-<p><a href="/auth">Log in</a></p>
-
-{#if form?.error}
-	<p class="error">{form.error}</p>
+{#if !user}
+  <form action="?/login" method="POST">
+	  <button>Login</button>
+  </form>
+{:else }
+  <button on:click={logout}>Logout</button>
 {/if}
 
-<form action="?/upload" method="post" enctype="multipart/form-data">
-	<input type="file" name="file" id="file" />
-	<button>Submit</button>
-</form>
-
 <ul>
-	{#each countries as country}
-		<li>{country.name}</li>
-	{/each}
-</ul>
-
-<ul>
-	{#each videos as video}
-		<li>
-			<video controls width="250px">
-				<source src={video.signedUrl} type="video/mp4" />
-			</video>
-		</li>
+	{#each blobs as blob}
+		<li><a href="/blob/{blob.uuid}">{blob.title}</a></li>
 	{/each}
 </ul>
