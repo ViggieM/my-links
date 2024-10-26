@@ -60,3 +60,169 @@
   - damit kann man sicherstellen wer welche tags sehen darf
   - nicht alle tags dürfen für alle user sichtbar sein
 - Erstmal keine Verbindungen zwischen Blobs
+
+## Fehler
+
+Folgender Fehler taucht in den server logs ständig auf
+
+```
+Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and many not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.
+```
+
+es scheint untersucht zu sein [hier](https://github.com/supabase/auth-js/issues/873) und [das](https://github.com/supabase/auth-js/issues/873#issuecomment-2081467385) ist evtl eine Lösung.
+
+## Sveltekit
+
+- Mehr demos https://supabase.com/docs/guides/getting-started/tutorials/with-sveltekit
+- Man kann Datenbank schema pullen lokal:https://supabase.com/docs/guides/local-development/overview#link-your-project
+- https://chatgpt.com/c/671d4677-dafc-8006-8a54-dc26b4b5c668
+
+# Svelte 5
+
+- details zu supabase auth https://www.thespatula.io/svelte/sveltekit_supabase/
+- svelte 4 docs https://v4.svelte.dev/docs/svelte-store
+
+# Supabase functions
+
+Docs:
+
+- [Full Text Search | Supabase Docs](https://supabase.com/docs/guides/database/full-text-search)
+- [PostgreSQL: Documentation: 17: 12.3. Controlling Text Search](https://www.postgresql.org/docs/current/textsearch-controls.html)
+
+```sql
+CREATE
+OR REPLACE FUNCTION get_parent_tags_multiple (tag_ids BIGINT[]) RETURNS TABLE (id BIGINT, NAME TEXT, parent_id SMALLINT) AS $$
+WITH RECURSIVE parent_tags AS (
+    SELECT
+        id,
+        name,
+        parent_id
+    FROM
+        public.tags
+    WHERE
+        id = ANY(tag_ids)  -- Start with the tags having the specified ids
+
+    UNION ALL
+
+    SELECT
+        t.id,
+        t.name,
+        t.parent_id
+    FROM
+        public.tags t
+    INNER JOIN
+        parent_tags pt ON t.id = pt.parent_id  -- Join to find parent tags
+)
+SELECT
+    id,
+    name,
+    parent_id
+FROM
+    parent_tags;
+$$ LANGUAGE SQL;
+```
+
+```sql
+CREATE
+OR REPLACE FUNCTION get_parent_tags_and_siblings (tag_ids BIGINT[]) RETURNS TABLE (id BIGINT, NAME TEXT, parent_id SMALLINT) AS $$
+WITH RECURSIVE
+  parent_tags AS (
+    SELECT
+      id,
+      NAME,
+      parent_id
+    FROM
+      public.tags
+    WHERE
+      id = ANY (tag_ids) -- Replace with your list of integers
+    UNION ALL
+    SELECT
+      t.id,
+      t.name,
+      t.parent_id
+    FROM
+      public.tags t
+      INNER JOIN parent_tags pt ON t.id = pt.parent_id
+  ),
+  siblings AS (
+    SELECT
+      t.id,
+      t.name,
+      t.parent_id
+    FROM
+      public.tags t
+      INNER JOIN parent_tags pt ON t.parent_id = pt.parent_id
+    WHERE
+      t.id <> pt.id -- Exclude the tag itself
+  )
+SELECT
+  id,
+  NAME,
+  parent_id
+FROM
+  parent_tags
+UNION
+SELECT
+  id,
+  NAME,
+  parent_id
+FROM
+  siblings;
+$$ LANGUAGE SQL;
+```
+
+# triggers and functions
+
+Spalte erstellen
+
+```sql
+ALTER
+
+TABLE
+ public.tags
+ADD
+
+COLUMN
+ search_vector tsvector;
+```
+
+Funktion definieren
+
+```sql
+BEGIN
+    NEW.search_vector := to_tsvector(
+        'english',
+        coalesce(NEW.name, '') || ' ' ||
+        coalesce(array_to_string(NEW.alternative_names, ' '), '')
+    );
+    RETURN NEW;
+END;
+```
+
+Funktion wird getriggert bei BEFORE INSERT und BEFORE UPDATE
+
+Um bestehende rows zu updaten, folgende query ausführen:
+
+```sql
+DO $$
+DECLARE
+    record_id INTEGER; -- Variable to hold the id
+BEGIN
+    FOR record_id IN SELECT id FROM public.tags LOOP
+        UPDATE public.tags SET name = name WHERE id = record_id;
+    END LOOP;
+END $$;
+```
+
+Suche nach prefix notwendig, sonst keine vorschläge, wenn man wörter eintippt:
+
+```sql
+create or replace function search_tags_by_prefix(prefix text)
+returns setof tags AS $$
+begin
+  return query
+  select * from tags where search_vector @@ to_tsquery(prefix || ':*');
+end;
+$$ language plpgsql;
+
+```

@@ -2,12 +2,8 @@ import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
 export const load = async ({ depends, locals: { supabase } }) => {
-  depends('supabase:db:blobs')
-	const { data: blobs } = await supabase
-		.from('blobs')
-		.select('title,uuid')
-		.limit(50)
-		.order('id');
+	depends('supabase:db:blobs');
+	const { data: blobs } = await supabase.from('blobs').select('title,uuid').limit(50).order('id');
 
 	return {
 		blobs: blobs ?? []

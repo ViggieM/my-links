@@ -1,5 +1,6 @@
 import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { loadAllTagsFromSupabase } from '$lib/stores/tags.svelte.js';
 
 export const load = async ({ data, depends, fetch }) => {
 	depends('supabase:auth');
@@ -17,6 +18,9 @@ export const load = async ({ data, depends, fetch }) => {
 					}
 				}
 			});
+
+  // todo: is this safe to do serverside? or should I only do it if isBrowser() ?
+  await loadAllTagsFromSupabase(supabase);
 
 	const {
 		data: { session }
