@@ -80,8 +80,8 @@ export function blobTagsController(blobTags) {
 		}
 	}
 
+  /* select / unselect Tag */
 	function addTag(id) {
-    // select / unselect Tag
     const tag = tags.get(id)
 		// remove all parent tags if a child tag is selected
 		if (tag.parent_id !== null) {
@@ -97,6 +97,8 @@ export function blobTagsController(blobTags) {
 
     // set currently clicked tag as a selected tag if it was not previously selected, else unselect it
 		selectedTags.has(tag.id) ? selectedTags.delete(tag.id) : selectedTags.add(tag.id);
+
+    console.log(visibleTags)
 	}
 
 	function getSelectedTags() {

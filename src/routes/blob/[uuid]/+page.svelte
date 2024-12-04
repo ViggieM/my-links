@@ -21,7 +21,7 @@
 {#snippet tagButton(tagId)}
   {#if tagsController.visibleTags.has(tagId)}
     {@const tag = tags.get(tagId)}
-    <li><button onclick={() => {tagsController.addTag(tag.id)}}>{tag.name}</button></li>
+    <li><button onclick={() => {tagsController.addTag(tag.id)}}>{tag.name} {tag.id}</button></li>
     {@const children = getChildrenIds(tagId)}
     {#if children.length > 0}
       <ul>
@@ -36,5 +36,25 @@
 <ul>
 	{#each tagsController.topLevelTags as tagId}
     {@render tagButton(tagId)}
+	{/each}
+</ul>
+
+
+{#snippet tagButtonAll(tagId)}
+  {@const tag = tags.get(tagId)}
+  <li><button onclick={() => {tagsController.addTag(tag.id)}}>{tag.name} {tag.id}</button></li>
+  {@const children = getChildrenIds(tagId)}
+  {#if children.length > 0}
+    <ul>
+      {#each children as childTagId}
+        {@render tagButtonAll(childTagId)}
+      {/each}
+    </ul>
+  {/if}
+{/snippet}
+
+<ul>
+	{#each tagsController.topLevelTags as tagId}
+    {@render tagButtonAll(tagId)}
 	{/each}
 </ul>
