@@ -1,7 +1,8 @@
+import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-export const load = async ({ depends, locals: { supabase } }) => {
+export const load: PageServerLoad = async ({ depends, locals: { supabase } }) => {
 	depends('supabase:db:blobs');
 	const { data: blobs } = await supabase.from('blobs').select('title,uuid').limit(50).order('id');
 

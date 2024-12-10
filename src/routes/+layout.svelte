@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+	import '../app.css';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 
@@ -16,4 +17,4 @@
 	});
 </script>
 
-{@render children?.()}
+{@render children()}

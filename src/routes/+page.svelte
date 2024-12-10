@@ -12,14 +12,25 @@
 
 {#if !user}
 	<form action="?/login" method="POST">
-		<button>Login</button>
+		<button class="btn">Login</button>
 	</form>
 {:else}
-	<button onclick={logout}>Logout</button>
+	<button class="btn" onclick={logout}>Logout</button>
 {/if}
 
-<ul>
-	{#each blobs as blob}
-		<li><a href="/blob/{blob.uuid}">{blob.title}</a></li>
-	{/each}
-</ul>
+<div class="overflow-x-auto">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Title</th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each blobs as blob}
+				<tr>
+					<td><a href="/blob/{blob.uuid}">{blob.title}</a></td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>

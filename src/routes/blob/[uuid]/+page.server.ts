@@ -1,7 +1,7 @@
 import { error as renderError } from '@sveltejs/kit';
 
 export const load = async ({ params, locals: { supabase } }) => {
-	let { data: blobs, error } = await supabase
+	let { data, error } = await supabase
 		.from('blobs')
 		.select('id,title,url,notes,rating,blob_tags(tag_id,tags(name))')
 		.eq('uuid', params.uuid);
@@ -11,9 +11,9 @@ export const load = async ({ params, locals: { supabase } }) => {
 		console.error(error);
 	}
 
-	if (blobs.length === 0) renderError(404, 'Not found');
+	if (!data || data.length === 0) renderError(404, 'Not found');
 
-	const blob = blobs[0];
+	const blob = data[0];
 	const blobTags = blob.blob_tags.map((tag) => tag.tag_id);
 
 	return {
@@ -45,20 +45,5 @@ export const actions = {
 		}
 
 		// todo: add success message
-	},
-	addTag: async ({ request, locals: { supabase } }) => {
-		return { id: 10, name: 'Name' };
-		const formData = await request.formData();
-		const tagName = formData.get('name');
-		const parentId = formData.get('parentId');
-
-		// const { data, error } = await supabase
-		//   .from('tags')
-		//   .insert([
-		//     { name: tagName, parent_id: parentId },
-		//   ])
-		//   .select('id,name')
-		// if (error) console.log(error)
-		return data;
 	}
 };
