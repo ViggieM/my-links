@@ -18,3 +18,9 @@ export function createUniqueColorGenerator(): () => [number, number, number] {
 
 	return getRandomColor;
 }
+
+// https://blog.logrocket.com/applying-dynamic-styles-tailwind-css/
+export const getAccessibleColor = (r: number, g: number, b: number) => {
+	const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+	return yiq >= 128 ? '#000000' : '#FFFFFF';
+};
