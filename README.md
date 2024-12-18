@@ -77,6 +77,29 @@ end;
 $$ language plpgsql;
 ```
 
+### Supabase
+
+```bash
+# pull the docker images locally
+pnpx supabase start
+# in case you forget the local credentials, you can display them again with this command
+pnpx supabase status
+# to link a local project to an existing supabase instance
+pnpx supabase link
+# to create an initial migration from the existing supabase instance
+pnpx supabase db diff -f initial_structure --linked
+# to create a dump from your local data
+pnpx supabase db dump --data-only -f supabase/seed.sql
+# apply changes locally
+pnpx supabase db reset
+# apply changes to remote supabase instance
+pnpx supabase db push --linked
+```
+
+#### Troubleshooting
+
+* `pnpx supabase db push --linked` fails with "must be owner of table ...": see [cli - supabase db push as postgres user causes "ERROR: must be owner of table" · supabase · Discussion #6326](https://github.com/orgs/supabase/discussions/6326)
+
 ### Misc
 
 - `dotenvx` is not necessary, since vite reads the env variables on its own, see https://vite.dev/guide/env-and-mode.html#env-files .
