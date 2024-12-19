@@ -303,28 +303,22 @@ grant truncate on table "public"."tags" to "service_role";
 
 grant update on table "public"."tags" to "service_role";
 
-create policy "Allow me to do everything"
+create policy "Allow everything for authenticated users"
 on "public"."blob_tags"
-as permissive
-for all
 to authenticated
-using ((( SELECT auth.uid() AS uid) = 'd63b5e2d-722b-46ac-8994-26721e143fb8'::uuid));
+with check (true);
 
 
-create policy "Allow me to do everything"
+create policy "Allow everything for authenticated users"
 on "public"."blobs"
-as permissive
-for all
 to authenticated
-using ((( SELECT auth.uid() AS uid) = 'd63b5e2d-722b-46ac-8994-26721e143fb8'::uuid));
+with check (true);
 
 
-create policy "Allow me to do everything"
+create policy "Allow everything for authenticated users"
 on "public"."tags"
-as permissive
-for all
 to authenticated
-using ((( SELECT auth.uid() AS uid) = 'd63b5e2d-722b-46ac-8994-26721e143fb8'::uuid));
+with check (true);
 
 
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON public.tags FOR EACH ROW EXECUTE FUNCTION tags_search_vector_update();

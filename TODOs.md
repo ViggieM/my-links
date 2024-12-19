@@ -1,3 +1,7 @@
+# WIP
+
+- [ ] Save supabase schema locally, see https://supabase.com/docs/guides/local-development/overview#link-your-project
+
 # TODO
 
 - [ ] Add a logo in [Google Cloud Console](https://console.cloud.google.com/apis/credentials/consent/edit;newAppInternalUser=false?project=wherehowhy-1541494745810)
@@ -9,7 +13,6 @@
   Possible Solutions:
   - https://github.com/supabase/auth-js/issues/873
   - https://github.com/supabase/auth-js/issues/873#issuecomment-2081467385
-- [ ] Save supabase schema locally, see https://supabase.com/docs/guides/local-development/overview#link-your-project
 
 # Read/Review
 

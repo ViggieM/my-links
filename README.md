@@ -3,6 +3,13 @@
 - Netlify Dashboard: https://app.netlify.com/sites/splendid-hummingbird-a9d52f/overview
 - Netlify App url: https://splendid-hummingbird-a9d52f.netlify.app/
 
+## Local Development
+
+```bash
+pnpx supabase start
+pnpm run dev
+```
+
 ## Learnings
 
 ### Server side Authentication with SvelteKit
@@ -96,9 +103,13 @@ pnpx supabase db reset
 pnpx supabase db push --linked
 ```
 
+#### Set up authentication locally
+
+Reference: [How to setup supabase locally with OAUTH providers | Alberto Sadde](https://www.albertosadde.com/blog/local-auth-with-subapase/)
+
 #### Troubleshooting
 
-* `pnpx supabase db push --linked` fails with "must be owner of table ...": see [cli - supabase db push as postgres user causes "ERROR: must be owner of table" · supabase · Discussion #6326](https://github.com/orgs/supabase/discussions/6326)
+- `pnpx supabase db push --linked` fails with "must be owner of table ...": see [cli - supabase db push as postgres user causes "ERROR: must be owner of table" · supabase · Discussion #6326](https://github.com/orgs/supabase/discussions/6326)
 
 ### Misc
 
