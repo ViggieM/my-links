@@ -305,19 +305,25 @@ grant update on table "public"."tags" to "service_role";
 
 create policy "Allow everything for authenticated users"
 on "public"."blob_tags"
+for all
 to authenticated
+using (true)
 with check (true);
 
 
 create policy "Allow everything for authenticated users"
 on "public"."blobs"
+for all
 to authenticated
+using (true)
 with check (true);
 
 
 create policy "Allow everything for authenticated users"
 on "public"."tags"
+for all
 to authenticated
+using (true)
 with check (true);
 
 

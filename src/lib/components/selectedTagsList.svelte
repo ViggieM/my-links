@@ -9,8 +9,8 @@
 	}
 </script>
 
-<ul>
+<ul class="flex flex-wrap gap-2">
 	{#each getSelectedTags() as tag}
-		<li>{tag.name}</li>
+		<li class="badge">{tag.name}</li>
 	{/each}
 </ul>

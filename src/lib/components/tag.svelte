@@ -15,7 +15,7 @@
 </script>
 
 {#if tag && visibleTags.has(tagId)}
-	<div class="flex" in:fly={{ x: -200, duration: 300 }} out:fade>
+	<div class="mb-2 flex flex-wrap" in:fly={{ x: -200, duration: 300 }} out:fade>
 		<button
 			{onclick}
 			class="border-md mr-2 rounded px-2 py-1 shadow"

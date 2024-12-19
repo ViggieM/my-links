@@ -1,4 +1,4 @@
-import { error as renderError } from '@sveltejs/kit';
+import { error as renderError, fail } from '@sveltejs/kit';
 
 export const load = async ({ params, locals: { supabase } }) => {
 	let { data, error } = await supabase
@@ -23,7 +23,7 @@ export const load = async ({ params, locals: { supabase } }) => {
 };
 
 export const actions = {
-	saveTags: async ({ request, params, locals: { supabase } }) => {
+	saveTags: async ({ request, locals: { supabase } }) => {
 		const formData = await request.formData();
 		const selectedTags = formData.getAll('selectedTags');
 		const blobId = formData.get('blobId');
@@ -45,5 +45,44 @@ export const actions = {
 		}
 
 		// todo: add success message
+	},
+	selectTag: async ({ request, locals: { supabase } }) => {
+		const formData = await request.formData();
+		const tagId = formData.get('tagId');
+		const blobId = formData.get('blobId');
+
+		const { error } = await supabase.from('blob_tags').insert({ blob_id: blobId, tag_id: tagId });
+		if (error) {
+			return fail(422, {
+				description: 'Could not set tag for blob',
+				error: error.message
+			});
+		}
+	},
+	addTag: async ({ request, locals: { supabase } }) => {
+		const formData = await request.formData();
+		const newTagName = formData.get('newTagName');
+		const blobId = formData.get('blobId');
+
+		const { data, error } = await supabase.from('tags').insert({ name: newTagName }).select();
+
+		if (error) {
+			return fail(422, {
+				description: 'Could not create new tag',
+				error: error.message
+			});
+		}
+
+		const tagId = data[0].id;
+
+		const { error: setTagError } = await supabase
+			.from('blob_tags')
+			.insert({ blob_id: blobId, tag_id: tagId });
+		if (setTagError) {
+			return fail(422, {
+				description: 'Could not set tag for blob',
+				error: error.message
+			});
+		}
 	}
 };

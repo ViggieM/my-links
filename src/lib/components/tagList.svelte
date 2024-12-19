@@ -34,7 +34,7 @@
 	const getUniqueColor = createUniqueColorGenerator();
 </script>
 
-<div class="flex">
+<div class="flex flex-wrap">
 	{#each topLevelTags as tagId}
 		{@const [r, g, b, a] = [...getUniqueColor(), 1]}
 		<Tag {tagId} {selectedTags} {visibleTags} {r} {g} {b} {a} />

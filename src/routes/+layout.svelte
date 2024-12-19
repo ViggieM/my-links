@@ -5,7 +5,7 @@
 	import Navigation from '$lib/components/navigation.svelte';
 
 	let { data, children } = $props();
-	let { session, supabase, user } = $derived(data);
+	let { session, supabase, user } = data;
 
 	onMount(() => {
 		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
@@ -20,4 +20,4 @@
 
 <Navigation {supabase} {user} />
 
-<div class="container mx-auto">{@render children()}</div>
+<div class="container mx-auto px-5">{@render children()}</div>

@@ -36,6 +36,7 @@
 	},
 	"dependencies": {
 		"@supabase/ssr": "^0.5.2",
-		"@supabase/supabase-js": "^2.46.2"
+		"@supabase/supabase-js": "^2.46.2",
+		"@tailwindcss/typography": "^0.5.15"
 	}
 }
