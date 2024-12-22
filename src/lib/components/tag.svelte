@@ -10,6 +10,7 @@
 	const children = getChildrenIds(tagId);
 
 	async function onclick() {
+    // todo: wenn ein tag hinzugefügt / entfernt wird, sollte sich auch die selectedTagsList updaten
 		if (tag) addTag(selectedTagIds, tag.id);
 		await supabase.from('blob_tags').delete().eq('blob_id', blobId);
 
@@ -21,6 +22,7 @@
 
 {#if tag && (visibleTags.has(tagId) || tag.parent_id === null)}
 	<div class="flex flex-wrap" in:fly={{ x: -100, duration: 300 }} out:fade>
+<!--    todo: aus den tags ein badge machen -->
 		<button
 			{onclick}
 			class="border-md mr-2 rounded px-2 py-1 shadow outline-2 outline-offset-2 outline-current"

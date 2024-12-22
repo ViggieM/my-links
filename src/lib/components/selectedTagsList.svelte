@@ -11,7 +11,7 @@
 		[...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag)
 	);
 
-	function optionFromTag(tag: Tag) {
+	function optionFromTag(tag: Tag): ObjectOption {
 		return {
 			id: tag.id,
 			label: tag.name
@@ -19,6 +19,8 @@
 	}
 
 	async function onAdd(evt) {
+    // todo: wenn man ein tag hinzufügt, dann sollte hier auch berücksichtigt werden dass
+    //  parent tags deselektiert werden
 		let tagId = evt.detail.option.id;
 		if (!tagId) {
 			const name = evt.detail.option.label;
@@ -62,8 +64,9 @@
 	<MultiSelect
 		bind:selected
 		{options}
-		key={(opt) => opt.id}
+		key={(opt: ObjectOption) => opt.id}
 		outerDivClass="border-none w-full [&_.remove-all]:hidden"
+    liSelectedClass="badge badge-lg"
 		allowUserOptions="append"
 		--sms-placeholder-opacity="0.7"
 		placeholder="no tags selected"
