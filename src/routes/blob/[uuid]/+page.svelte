@@ -4,7 +4,6 @@
 	import BlobUrl from '$lib/components/blobUrl.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
-
 	let { data } = $props();
 
 	// https://svelte.dev/docs/kit/state-management#Using-stores-with-context
