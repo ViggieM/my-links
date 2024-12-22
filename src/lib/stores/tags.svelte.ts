@@ -33,6 +33,7 @@ export function getParentIds(tagId: number): number[] {
 	let current = tags.get(tagId);
 
 	while (current && current.parent_id !== undefined) {
+		if (current.parent_id === null) break;
 		parents.push(current.parent_id);
 		current = tags.get(current.parent_id);
 	}
@@ -52,4 +53,26 @@ function removeChildren(selectedTags: Set<number>, tag: Tag) {
 			removeChildren(selectedTags, childTag);
 		}
 	}
+}
+
+export function getVisibleTagIds(selectedTagIds: number[]): Set<number> {
+	const result: Set<number> = new Set();
+
+	for (const id of selectedTagIds) {
+		result.add(id);
+
+		// parents are visible
+		const parents = getParentIds(id);
+		parents.forEach((parentId) => result.add(parentId));
+
+		// all siblings and siblings of the parents are visible
+		const siblings = [...tags.values()].filter((i) => i.parent_id && parents.includes(i.parent_id));
+		siblings.forEach((sibling) => result.add(sibling.id));
+
+		// first level children are visible
+		const children = [...tags.values()].filter((i) => i.parent_id === id);
+		children.forEach((child) => result.add(child.id));
+	}
+
+	return result;
 }
