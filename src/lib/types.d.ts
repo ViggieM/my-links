@@ -3,4 +3,5 @@ type Tag = {
 	parent_id: number | null;
 	name: string;
 	color?: string;
+	level?: number;
 };

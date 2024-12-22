@@ -5,13 +5,7 @@
 
 <form action="?/create" method="post" class="form-control gap-2" use:enhance>
 	<label class="input input-bordered flex items-center gap-2">
-		<input
-			type="text"
-			name="title"
-			required
-			class="grow"
-			placeholder="Title"
-		/>
+		<input type="text" name="title" required class="grow" placeholder="Title" />
 	</label>
 
 	<label class="input input-bordered flex items-center gap-2">

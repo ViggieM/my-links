@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { addTag, getChildrenIds, tags } from '$lib/stores/tags.svelte';
+	import { getAncestors, getChildrenIds, getDescendants, tags } from '$lib/stores/tags.svelte';
 	import Tag from '$lib/components/tag.svelte';
 	import { getAccessibleColor } from '$lib';
 	import { fly, fade } from 'svelte/transition';
@@ -10,12 +10,21 @@
 	const children = getChildrenIds(tagId);
 
 	async function onclick() {
-		if (tag) addTag(selectedTagIds, tag.id);
-		await supabase.from('blob_tags').delete().eq('blob_id', blobId);
+		if (!tag) return;
 
-		await supabase
-			.from('blob_tags')
-			.insert([...selectedTagIds].map((tagId) => ({ blob_id: blobId, tag_id: tagId })));
+		for (let i of getAncestors(tag)) {
+			selectedTagIds.delete(i);
+		}
+		for (let i of getDescendants(tag)) {
+			selectedTagIds.delete(i);
+		}
+
+		// select tag if it was previously not selected, else unselect it
+		if (selectedTagIds.has(tag.id)) {
+			selectedTagIds.delete(tag.id);
+		} else {
+			selectedTagIds.add(tag.id);
+		}
 	}
 </script>
 
@@ -23,7 +32,7 @@
 	<div class="flex flex-wrap" in:fly={{ x: -100, duration: 300 }} out:fade>
 		<button
 			{onclick}
-			class="border-md mr-2 rounded px-2 py-1 shadow outline-2 outline-offset-2 outline-current"
+			class="badge mr-2 shadow outline-1 outline-offset-1 outline-current"
 			class:outline={selectedTagIds.has(tagId)}
 			style="color: rgba({r},{g},{b}, 0.7); background: linear-gradient(135deg, rgba({r + 10},{g -
 				10},{b - 10},{a}) 0%, rgba({r - 5},{g + 5},{b + 5},{a}) 100%)"
