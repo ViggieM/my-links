@@ -3,6 +3,13 @@
 - Netlify Dashboard: https://app.netlify.com/sites/splendid-hummingbird-a9d52f/overview
 - Netlify App url: https://splendid-hummingbird-a9d52f.netlify.app/
 
+## Local Development
+
+```bash
+pnpx supabase start
+pnpm run dev
+```
+
 ## Learnings
 
 ### Server side Authentication with SvelteKit
@@ -76,6 +83,33 @@ begin
 end;
 $$ language plpgsql;
 ```
+
+### Supabase
+
+```bash
+# pull the docker images locally
+pnpx supabase start
+# in case you forget the local credentials, you can display them again with this command
+pnpx supabase status
+# to link a local project to an existing supabase instance
+pnpx supabase link
+# to create an initial migration from the existing supabase instance
+pnpx supabase db diff -f initial_structure --linked
+# to create a dump from your local data
+pnpx supabase db dump --data-only -f supabase/seed.sql
+# apply changes locally
+pnpx supabase db reset
+# apply changes to remote supabase instance
+pnpx supabase db push --linked
+```
+
+#### Set up authentication locally
+
+Reference: [How to setup supabase locally with OAUTH providers | Alberto Sadde](https://www.albertosadde.com/blog/local-auth-with-subapase/)
+
+#### Troubleshooting
+
+- `pnpx supabase db push --linked` fails with "must be owner of table ...": see [cli - supabase db push as postgres user causes "ERROR: must be owner of table" · supabase · Discussion #6326](https://github.com/orgs/supabase/discussions/6326)
 
 ### Misc
 

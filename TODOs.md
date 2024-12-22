@@ -1,3 +1,5 @@
+# WIP
+
 # TODO
 
 - [ ] Add a logo in [Google Cloud Console](https://console.cloud.google.com/apis/credentials/consent/edit;newAppInternalUser=false?project=wherehowhy-1541494745810)
@@ -9,7 +11,6 @@
   Possible Solutions:
   - https://github.com/supabase/auth-js/issues/873
   - https://github.com/supabase/auth-js/issues/873#issuecomment-2081467385
-- [ ] Save supabase schema locally, see https://supabase.com/docs/guides/local-development/overview#link-your-project
 
 # Read/Review
 
@@ -17,3 +18,7 @@
 - [ ] [How to have Perfect Contrast of Text Color on Any Background in TailwindCSS - DEV Community](https://dev.to/didof/how-to-have-perfect-contrast-of-text-color-on-any-background-in-tailwindcss-4cbh)
 - [ ] Research: Configure Netlify for OAuth https://app.netlify.com/sites/splendid-hummingbird-a9d52f/configuration/access#oauth
 - [Applying dynamic styles with Tailwind CSS - LogRocket Blog](https://blog.logrocket.com/applying-dynamic-styles-tailwind-css/)
+
+# DONE
+
+- [x] Save supabase schema locally, see https://supabase.com/docs/guides/local-development/overview#link-your-project
