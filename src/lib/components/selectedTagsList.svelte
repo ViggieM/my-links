@@ -1,18 +1,18 @@
 <script lang="ts">
-  import {
-    getAncestors,
-    getDescendants,
-    getOrderedTags,
-    getVisibleTagIds,
-    optionFromTag,
-    tags
-  } from '$lib/stores/tags.svelte';
-  import TagSlot from '$lib/components/TagSlot.svelte';
-  import MultiSelect, { type ObjectOption, type Option } from 'svelte-multiselect';
-  import TagList from '$lib/components/tagList.svelte';
+	import {
+		getAncestors,
+		getDescendants,
+		getOrderedTags,
+		getVisibleTagIds,
+		optionFromTag,
+		tags
+	} from '$lib/stores/tags.svelte';
+	import TagSlot from '$lib/components/TagSlot.svelte';
+	import MultiSelect, { type ObjectOption, type Option } from 'svelte-multiselect';
+	import TagList from '$lib/components/tagList.svelte';
 
-  const { blob, selectedTagIds, supabase } = $props();
-  const visibleTags = $derived(getVisibleTagIds([...selectedTagIds]))
+	const { blob, selectedTagIds, supabase } = $props();
+	const visibleTags = $derived(getVisibleTagIds([...selectedTagIds]));
 
 	const options: ObjectOption[] = getOrderedTags();
 	let selected: ObjectOption[] = $state(
@@ -24,14 +24,14 @@
 	});
 
 	function filterFunc(opt: Option, searchText: string) {
-    if (searchText) {
-      return `${opt.label}`.toLowerCase().includes(searchText.toLowerCase())
-    }
-    return visibleTags.has(opt.id) || opt.parent_id === null
-  }
+		if (searchText) {
+			return `${opt.label}`.toLowerCase().includes(searchText.toLowerCase());
+		}
+		return visibleTags.has(opt.id) || opt.parent_id === null;
+	}
 
 	async function onAdd(evt) {
-    console.log(evt)
+		console.log(evt);
 		let tagId = evt.detail.option.id;
 		if (!tagId) {
 			const name = evt.detail.option.label;
@@ -45,18 +45,18 @@
 			tagId = tag.id;
 		}
 
-    if (selectedTagIds.has(tagId)) {
-      selectedTagIds.delete(tagId);
-    } else {
-      selectedTagIds.add(tagId);
-      const tag = tags.get(tagId);
-      for (let i of getAncestors(tag)) {
-        selectedTagIds.delete(i);
-      }
-      for (let i of getDescendants(tag)) {
-        selectedTagIds.delete(i);
-      }
-    }
+		if (selectedTagIds.has(tagId)) {
+			selectedTagIds.delete(tagId);
+		} else {
+			selectedTagIds.add(tagId);
+			const tag = tags.get(tagId);
+			for (let i of getAncestors(tag)) {
+				selectedTagIds.delete(i);
+			}
+			for (let i of getDescendants(tag)) {
+				selectedTagIds.delete(i);
+			}
+		}
 
 		selected = [...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag);
 	}
@@ -90,14 +90,14 @@
 		key={(opt: ObjectOption) => opt.id}
 		outerDivClass="border-none w-full [&_.remove-all]:hidden"
 		liSelectedClass="badge"
-    liOptionClass="badge mr-2 mb-1"
-    ulOptionsClass="p-2"
+		liOptionClass="badge mr-1.5 mb-1"
+		ulOptionsClass="p-2"
 		allowUserOptions="append"
 		--sms-placeholder-opacity="0.7"
 		placeholder="no tags selected"
-    filterFunc={filterFunc}
+		{filterFunc}
 		selectedOptionsDraggable={false}
-    duplicates={true}
+		duplicates={true}
 		on:add={onAdd}
 		on:remove={onRemove}
 		let:option
@@ -115,9 +115,7 @@
 				<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
 			</svg>
 		</span>
-    <span slot="user-msg" class="text-sm">Create this tag...</span>
+		<span slot="user-msg" class="text-sm">Create this tag...</span>
 		<TagSlot {option}></TagSlot>
 	</MultiSelect>
 </div>
-
-<TagList blobId={blob.id} {supabase} {selectedTagIds}></TagList>

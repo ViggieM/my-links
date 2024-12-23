@@ -24,3 +24,25 @@ export const getAccessibleColor = (r: number, g: number, b: number) => {
 	const yiq = (r * 299 + g * 587 + b * 114) / 1000;
 	return yiq >= 128 ? '#000000' : '#FFFFFF';
 };
+
+export const getRGBColor = (hex: string) => {
+	const color = hex.replace(/#/g, '');
+	// rgb values
+	const r = parseInt(color.substr(0, 2), 16);
+	const g = parseInt(color.substr(2, 2), 16);
+	const b = parseInt(color.substr(4, 2), 16);
+
+	return [r, g, b];
+};
+
+export function rgbToHex(r: number, g: number, b: number) {
+	return '#' + [r, g, b].map((value) => value.toString(16).padStart(2, '0')).join('');
+}
+
+export function getRandomColor(): string {
+	const r = Math.floor(Math.random() * 256);
+	const g = Math.floor(Math.random() * 256);
+	const b = Math.floor(Math.random() * 256);
+
+	return rgbToHex(r, g, b);
+}

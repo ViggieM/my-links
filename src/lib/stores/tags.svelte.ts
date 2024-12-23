@@ -1,5 +1,6 @@
 import { SvelteMap } from 'svelte/reactivity';
 import type { ObjectOption } from 'svelte-multiselect';
+import { getAccessibleColor, getRGBColor, rgbToHex } from '$lib';
 
 export const tags: Map<number, Tag> = new SvelteMap();
 export const areTagsLoaded = $state(false);
@@ -70,41 +71,50 @@ export function getVisibleTagIds(selectedTagIds: number[]): Set<number> {
 }
 
 export function getOrderedTags() {
-  const result: Tag[] = []
+	const result: Tag[] = [];
 
-  function appendChildren(tag: Tag) {
-    const children = [...tags.values()].filter((i) => i.parent_id === tag.id);
-    for (const child of children) {
-      child.level = (tag.level || 0) + 1
-      result.push(child)
-      appendChildren(child)
-    }
-  }
+	function appendChildren(tag: Tag) {
+		const children = [...tags.values()].filter((i) => i.parent_id === tag.id);
+		for (const child of children) {
+			child.level = (tag.level || 0) + 1;
+			result.push(child);
+			appendChildren(child);
+		}
+	}
 
-  for (const tag of tags.values()) {
-    if (tag.parent_id === null) {
-      tag.level = 0
-      result.push(tag)
-      appendChildren(tag)
-    }
-  }
+	for (const tag of tags.values()) {
+		if (tag.parent_id === null) {
+			tag.level = 0;
+			result.push(tag);
+			appendChildren(tag);
+		}
+	}
 
-  return result.map(optionFromTag)
+	return result.map(optionFromTag);
 }
 
-function getBackgroundColor(r:number, g:number, b:number, a:number) {
-  return `background: linear-gradient(135deg, rgba(${r + 10},${g - 10},${b - 10},${a}) 0%, rgba(${r - 5},${g + 5},${b + 5},${a}) 100%)"`
+function getBackgroundColor(r: number, g: number, b: number, a: number) {
+	const [fromR, toR] = [r + 10, r - 5];
+	const [fromG, toG] = [g + 10, g - 5];
+	const [fromB, toB] = [b - 10, b + 5];
+	return `color: ${getAccessibleColor(r, g, b)};
+          background: linear-gradient(135deg, rgba(${fromR},${fromG},${fromB},${a}) 0%,
+          rgba(${toR},${toG},${toB},${a}) 100%)`;
 }
 
 export function optionFromTag(tag: Tag): ObjectOption {
-  return {
-    id: tag.id,
-    parent_id: tag.parent_id,
-    label: tag.name,
-    level: tag.level || 0,
-    style: {
-      option: "",
-      selected: ""
-    }
-  };
+	const [r, g, b] = getRGBColor(tag.color || `#ffad00`);
+	const level = tag.level || 0;
+	const a = 1 - level / 10;
+
+	return {
+		id: tag.id,
+		parent_id: tag.parent_id,
+		label: tag.name,
+		level: tag.level || 0,
+		style: {
+			option: getBackgroundColor(r, g, b, a),
+			selected: getBackgroundColor(r, g, b, a)
+		}
+	};
 }

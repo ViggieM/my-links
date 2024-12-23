@@ -1,9 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { areTagsLoaded, tags } from '$lib/stores/tags.svelte';
+import { createUniqueColorGenerator, getRandomColor } from '$lib';
+
+const getUniqueColor = createUniqueColorGenerator();
 
 export async function loadAllTagsFromSupabase(supabase: SupabaseClient) {
 	if (!areTagsLoaded) {
-		const { data, error } = await supabase.from('tags').select('id,name,parent_id');
+		const { data, error } = await supabase.from('tags').select('id,name,parent_id,color');
 
 		if (error) {
 			// todo: handle error
@@ -12,6 +15,7 @@ export async function loadAllTagsFromSupabase(supabase: SupabaseClient) {
 		}
 
 		for (const tag of data) {
+			if (tag.color === null && tag.parent_id === null) tag.color = getRandomColor();
 			tags.set(tag.id, tag);
 		}
 	}
