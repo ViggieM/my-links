@@ -1,4 +1,5 @@
 import { SvelteMap } from 'svelte/reactivity';
+import type { ObjectOption } from 'svelte-multiselect';
 
 export const tags: Map<number, Tag> = new SvelteMap();
 export const areTagsLoaded = $state(false);
@@ -66,4 +67,44 @@ export function getVisibleTagIds(selectedTagIds: number[]): Set<number> {
 	}
 
 	return result;
+}
+
+export function getOrderedTags() {
+  const result: Tag[] = []
+
+  function appendChildren(tag: Tag) {
+    const children = [...tags.values()].filter((i) => i.parent_id === tag.id);
+    for (const child of children) {
+      child.level = (tag.level || 0) + 1
+      result.push(child)
+      appendChildren(child)
+    }
+  }
+
+  for (const tag of tags.values()) {
+    if (tag.parent_id === null) {
+      tag.level = 0
+      result.push(tag)
+      appendChildren(tag)
+    }
+  }
+
+  return result.map(optionFromTag)
+}
+
+function getBackgroundColor(r:number, g:number, b:number, a:number) {
+  return `background: linear-gradient(135deg, rgba(${r + 10},${g - 10},${b - 10},${a}) 0%, rgba(${r - 5},${g + 5},${b + 5},${a}) 100%)"`
+}
+
+export function optionFromTag(tag: Tag): ObjectOption {
+  return {
+    id: tag.id,
+    parent_id: tag.parent_id,
+    label: tag.name,
+    level: tag.level || 0,
+    style: {
+      option: "",
+      selected: ""
+    }
+  };
 }
