@@ -27,6 +27,7 @@ export function getDescendants(tag: Tag, ancestors: Set<number> = new Set()) {
 	return ancestors;
 }
 
+// todo: usage of this function should be replaced by getAncestors
 export function getParentIds(tagId: number): number[] {
 	const parents = [];
 	let current = tags.get(tagId);

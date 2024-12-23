@@ -24,8 +24,6 @@
 	}
 
 	async function onAdd(evt) {
-		// todo: wenn man ein tag hinzufügt, dann sollte hier auch berücksichtigt werden dass
-		//  parent tags deselektiert werden
 		let tagId = evt.detail.option.id;
 		if (!tagId) {
 			const name = evt.detail.option.label;
@@ -80,10 +78,13 @@
 		key={(opt: ObjectOption) => opt.id}
 		outerDivClass="border-none w-full [&_.remove-all]:hidden"
 		liSelectedClass="badge"
+    liOptionClass="badge mr-1"
+    ulOptionsClass="p-1"
 		allowUserOptions="append"
 		--sms-placeholder-opacity="0.7"
 		placeholder="no tags selected"
 		selectedOptionsDraggable={false}
+    duplicates={true}
 		on:add={onAdd}
 		on:remove={onRemove}
 		let:option
