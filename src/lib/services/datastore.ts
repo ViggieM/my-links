@@ -16,3 +16,10 @@ export async function loadAllTagsFromSupabase(supabase: SupabaseClient) {
 		}
 	}
 }
+
+export async function setBlobTags(supabase: SupabaseClient, blobId: number, tagIds: number[]) {
+	await supabase.from('blob_tags').delete().eq('blob_id', blobId);
+	await supabase
+		.from('blob_tags')
+		.insert(tagIds.map((tagId) => ({ blob_id: blobId, tag_id: tagId })));
+}

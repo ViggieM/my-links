@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { tags } from '$lib/stores/tags.svelte';
+	import { getAncestors, getDescendants, tags } from '$lib/stores/tags.svelte';
 	import TagSlot from '$lib/components/TagSlot.svelte';
 	import MultiSelect, { type ObjectOption } from 'svelte-multiselect';
+	import TagList from '$lib/components/tagList.svelte';
 
 	const { blob, selectedTagIds, supabase } = $props();
 	const options: ObjectOption[] = $derived.by(() => {
@@ -11,6 +12,10 @@
 		[...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag)
 	);
 
+	$effect(() => {
+		selected = [...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag);
+	});
+
 	function optionFromTag(tag: Tag): ObjectOption {
 		return {
 			id: tag.id,
@@ -19,8 +24,8 @@
 	}
 
 	async function onAdd(evt) {
-    // todo: wenn man ein tag hinzufügt, dann sollte hier auch berücksichtigt werden dass
-    //  parent tags deselektiert werden
+		// todo: wenn man ein tag hinzufügt, dann sollte hier auch berücksichtigt werden dass
+		//  parent tags deselektiert werden
 		let tagId = evt.detail.option.id;
 		if (!tagId) {
 			const name = evt.detail.option.label;
@@ -34,12 +39,20 @@
 			tagId = tag.id;
 		}
 		selectedTagIds.add(tagId);
-		await supabase.from('blob_tags').insert({ blob_id: blob.id, tag_id: tagId });
+
+		const tag = tags.get(tagId);
+		for (let i of getAncestors(tag)) {
+			selectedTagIds.delete(i);
+		}
+		for (let i of getDescendants(tag)) {
+			selectedTagIds.delete(i);
+		}
+
+		selected = [...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag);
 	}
 
 	async function onRemove(evt) {
 		const tagId = evt.detail.option.id;
-		await supabase.from('blob_tags').delete().match({ blob_id: blob.id, tag_id: tagId });
 		selectedTagIds.delete(tagId);
 	}
 </script>
@@ -66,7 +79,7 @@
 		{options}
 		key={(opt: ObjectOption) => opt.id}
 		outerDivClass="border-none w-full [&_.remove-all]:hidden"
-    liSelectedClass="badge badge-lg"
+		liSelectedClass="badge"
 		allowUserOptions="append"
 		--sms-placeholder-opacity="0.7"
 		placeholder="no tags selected"
@@ -91,3 +104,5 @@
 		<TagSlot {option}></TagSlot>
 	</MultiSelect>
 </div>
+
+<TagList blobId={blob.id} {supabase} {selectedTagIds}></TagList>
