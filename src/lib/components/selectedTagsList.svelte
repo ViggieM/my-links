@@ -9,9 +9,8 @@
 	} from '$lib/stores/tags.svelte';
 	import TagSlot from '$lib/components/TagSlot.svelte';
 	import MultiSelect, { type ObjectOption, type Option } from 'svelte-multiselect';
-	import TagList from '$lib/components/tagList.svelte';
 
-	const { blob, selectedTagIds, supabase } = $props();
+	const { selectedTagIds, supabase } = $props();
 	const visibleTags = $derived(getVisibleTagIds([...selectedTagIds]));
 
 	const options: ObjectOption[] = getOrderedTags();
@@ -90,13 +89,14 @@
 		key={(opt: ObjectOption) => opt.id}
 		outerDivClass="border-none w-full [&_.remove-all]:hidden"
 		liSelectedClass="badge"
-		liOptionClass="badge mr-1.5 mb-1"
-		ulOptionsClass="p-2"
+		liOptionClass="badge"
+		ulOptionsClass="p-2 flex gap-1.5 flex-wrap"
 		allowUserOptions="append"
 		--sms-placeholder-opacity="0.7"
 		placeholder="no tags selected"
 		{filterFunc}
 		selectedOptionsDraggable={false}
+		closeDropdownOnSelect={false}
 		duplicates={true}
 		on:add={onAdd}
 		on:remove={onRemove}

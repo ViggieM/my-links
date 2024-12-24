@@ -107,8 +107,10 @@ function getTopLevelTagColor(tag: Tag) {
 	const maxIter = 50;
 	const defaultColor = `#ffffff`;
 	for (let i = 0; i < maxIter; i++) {
-		if (current?.parent_id === null) return current.color || defaultColor;
-		if (current?.parent_id) current = tags.get(current.parent_id);
+		if (current === undefined) return defaultColor;
+		if (current.color) return current.color;
+		if (!current.parent_id) break;
+		current = tags.get(current.parent_id);
 	}
 	return defaultColor;
 }

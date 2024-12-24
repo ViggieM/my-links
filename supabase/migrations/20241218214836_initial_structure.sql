@@ -27,7 +27,8 @@ create table "public"."tags" (
     "alternative_names" text[],
     "parent_id" smallint,
     "name" text,
-    "search_vector" tsvector
+    "search_vector" tsvector,
+    "color" text
 );
 
 
