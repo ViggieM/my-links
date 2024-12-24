@@ -1,6 +1,6 @@
 import { SvelteMap } from 'svelte/reactivity';
 import type { ObjectOption } from 'svelte-multiselect';
-import { getAccessibleColor, getRGBColor, rgbToHex } from '$lib';
+import { analogousGradient, getAccessibleColor, getRGBColor } from '$lib';
 
 export const tags: Map<number, Tag> = new SvelteMap();
 export const areTagsLoaded = $state(false);
@@ -94,27 +94,40 @@ export function getOrderedTags() {
 }
 
 function getBackgroundColor(r: number, g: number, b: number, a: number) {
-	const [fromR, toR] = [r + 10, r - 5];
-	const [fromG, toG] = [g + 10, g - 5];
-	const [fromB, toB] = [b - 10, b + 5];
+	const { endColor1, endColor2 } = analogousGradient(r, g, b);
+	const [fromR, fromG, fromB] = endColor1;
+	const [toR, toG, toB] = endColor2;
 	return `color: ${getAccessibleColor(r, g, b)};
-          background: linear-gradient(135deg, rgba(${fromR},${fromG},${fromB},${a}) 0%,
+          background: linear-gradient(90deg, rgba(${fromR},${fromG},${fromB},${a}) 0%,
           rgba(${toR},${toG},${toB},${a}) 100%)`;
 }
 
+function getTopLevelTagColor(tag: Tag) {
+	let current: Tag | undefined = tag;
+	const maxIter = 50;
+	const defaultColor = `#ffffff`;
+	for (let i = 0; i < maxIter; i++) {
+		if (current?.parent_id === null) return current.color || defaultColor;
+		if (current?.parent_id) current = tags.get(current.parent_id);
+	}
+	return defaultColor;
+}
+
 export function optionFromTag(tag: Tag): ObjectOption {
-	const [r, g, b] = getRGBColor(tag.color || `#ffad00`);
+	const [r, g, b] = getRGBColor(tag.color || getTopLevelTagColor(tag));
 	const level = tag.level || 0;
-	const a = 1 - level / 10;
+	const { endColor1 } = analogousGradient(r, g, b, level * 2);
+	const [R, G, B] = [...endColor1];
+	const a = 0.8 - level / 20;
 
 	return {
 		id: tag.id,
 		parent_id: tag.parent_id,
 		label: tag.name,
-		level: tag.level || 0,
+		level: level,
 		style: {
-			option: getBackgroundColor(r, g, b, a),
-			selected: getBackgroundColor(r, g, b, a)
+			option: getBackgroundColor(R, G, B, a),
+			selected: getBackgroundColor(R, G, B, a)
 		}
 	};
 }

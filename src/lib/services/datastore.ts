@@ -1,8 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { areTagsLoaded, tags } from '$lib/stores/tags.svelte';
-import { createUniqueColorGenerator, getRandomColor } from '$lib';
-
-const getUniqueColor = createUniqueColorGenerator();
+import { getRandomColor } from '$lib';
 
 export async function loadAllTagsFromSupabase(supabase: SupabaseClient) {
 	if (!areTagsLoaded) {
