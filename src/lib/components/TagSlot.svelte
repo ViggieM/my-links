@@ -1,5 +1,5 @@
 <script lang="ts">
-	const { option: tag } = $props();
+	const { option } = $props();
 </script>
 
-<span>{tag.label}</span>
+<span>{option.label}</span>

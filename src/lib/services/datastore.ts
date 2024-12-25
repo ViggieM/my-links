@@ -1,6 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { areTagsLoaded, tags } from '$lib/stores/tags.svelte';
-import { getRandomColor } from '$lib';
+import { areTagsLoaded, getTagColor, tags } from '$lib/stores/tags.svelte';
 
 export async function loadAllTagsFromSupabase(supabase: SupabaseClient) {
 	if (!areTagsLoaded) {
@@ -13,7 +12,7 @@ export async function loadAllTagsFromSupabase(supabase: SupabaseClient) {
 		}
 
 		for (const tag of data) {
-			if (tag.color === null && tag.parent_id === null) tag.color = getRandomColor();
+			tag.color = getTagColor(tag);
 			tags.set(tag.id, tag);
 		}
 	}

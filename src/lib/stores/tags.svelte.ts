@@ -1,8 +1,8 @@
 import { SvelteMap } from 'svelte/reactivity';
 import type { ObjectOption } from 'svelte-multiselect';
-import { getAccessibleColor, getRGBColor } from '$lib';
+import { getAccessibleColor, hexToRGB } from '$lib';
 
-export const tags: Map<number, Tag> = new SvelteMap();
+export const tags: SvelteMap<number, Tag> = new SvelteMap();
 export const areTagsLoaded = $state(false);
 
 export function getAncestors(tag: Tag): Set<number> {
@@ -70,7 +70,7 @@ export function getVisibleTagIds(selectedTagIds: number[]): Set<number> {
 	return result;
 }
 
-export function getOrderedTags() {
+export function orderTags(tags: SvelteMap<number, Tag>) {
 	const result: Tag[] = [];
 
 	function appendChildren(tag: Tag) {
@@ -90,29 +90,29 @@ export function getOrderedTags() {
 		}
 	}
 
-	return result.map(optionFromTag);
+	return result;
 }
 
-function getBackgroundColor(r: number, g: number, b: number, a: number) {
+export function parseBadgeInlineStyle(r: number, g: number, b: number, a: number) {
 	return `color: ${getAccessibleColor(r, g, b)};
 	        background-color: rgba(${r}, ${g}, ${b}, ${a});`;
 }
 
-function getTopLevelTagColor(tag: Tag) {
+export function getTagColor(tag: Tag): string | undefined {
+	if (tag.color) return tag.color;
 	let current: Tag | undefined = tag;
 	const maxIter = 50;
-	const defaultColor = `#ffffff`;
 	for (let i = 0; i < maxIter; i++) {
-		if (current === undefined) return defaultColor;
+		if (current === undefined) return;
 		if (current.color) return current.color;
 		if (!current.parent_id) break;
 		current = tags.get(current.parent_id);
 	}
-	return defaultColor;
 }
 
 export function optionFromTag(tag: Tag): ObjectOption {
-	const [r, g, b] = getRGBColor(tag.color || getTopLevelTagColor(tag));
+	const tagColor = getTagColor(tag) || `#ffffff`;
+	const [r, g, b] = hexToRGB(tagColor);
 	const level = tag.level || 0;
 	const a = Math.max(1 - level / 10, 0.3);
 
@@ -122,8 +122,8 @@ export function optionFromTag(tag: Tag): ObjectOption {
 		label: tag.name,
 		level: level,
 		style: {
-			option: getBackgroundColor(r, g, b, a),
-			selected: getBackgroundColor(r, g, b, a)
+			option: parseBadgeInlineStyle(r, g, b, a),
+			selected: parseBadgeInlineStyle(r, g, b, a)
 		}
 	};
 }

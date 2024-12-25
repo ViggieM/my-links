@@ -2,7 +2,7 @@
 	import {
 		getAncestors,
 		getDescendants,
-		getOrderedTags,
+		orderTags,
 		getVisibleTagIds,
 		optionFromTag,
 		tags
@@ -13,7 +13,8 @@
 	const { selectedTagIds, supabase } = $props();
 	const visibleTags = $derived(getVisibleTagIds([...selectedTagIds]));
 
-	const options: ObjectOption[] = getOrderedTags();
+	const orderedTags = orderTags(tags);
+	const options: ObjectOption[] = orderedTags.map(optionFromTag);
 	let selected: ObjectOption[] = $state(
 		[...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag)
 	);
