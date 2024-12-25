@@ -21,4 +21,4 @@
 
 <Navigation {supabase} {user} />
 
-<div class="container mx-auto px-5">{@render children()}</div>
+<div class="container mx-auto">{@render children()}</div>

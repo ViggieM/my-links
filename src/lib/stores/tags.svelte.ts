@@ -1,6 +1,6 @@
 import { SvelteMap } from 'svelte/reactivity';
 import type { ObjectOption } from 'svelte-multiselect';
-import { analogousGradient, getAccessibleColor, getRGBColor } from '$lib';
+import { getAccessibleColor, getRGBColor } from '$lib';
 
 export const tags: Map<number, Tag> = new SvelteMap();
 export const areTagsLoaded = $state(false);
@@ -94,12 +94,8 @@ export function getOrderedTags() {
 }
 
 function getBackgroundColor(r: number, g: number, b: number, a: number) {
-	const { endColor1, endColor2 } = analogousGradient(r, g, b);
-	const [fromR, fromG, fromB] = endColor1;
-	const [toR, toG, toB] = endColor2;
 	return `color: ${getAccessibleColor(r, g, b)};
-          background: linear-gradient(90deg, rgba(${fromR},${fromG},${fromB},${a}) 0%,
-          rgba(${toR},${toG},${toB},${a}) 100%)`;
+	        background-color: rgba(${r}, ${g}, ${b}, ${a});`;
 }
 
 function getTopLevelTagColor(tag: Tag) {
@@ -118,9 +114,7 @@ function getTopLevelTagColor(tag: Tag) {
 export function optionFromTag(tag: Tag): ObjectOption {
 	const [r, g, b] = getRGBColor(tag.color || getTopLevelTagColor(tag));
 	const level = tag.level || 0;
-	const { endColor1 } = analogousGradient(r, g, b, level * 2);
-	const [R, G, B] = [...endColor1];
-	const a = 0.8 - level / 20;
+	const a = Math.max(1 - level / 10, 0.3);
 
 	return {
 		id: tag.id,
@@ -128,8 +122,8 @@ export function optionFromTag(tag: Tag): ObjectOption {
 		label: tag.name,
 		level: level,
 		style: {
-			option: getBackgroundColor(R, G, B, a),
-			selected: getBackgroundColor(R, G, B, a)
+			option: getBackgroundColor(r, g, b, a),
+			selected: getBackgroundColor(r, g, b, a)
 		}
 	};
 }
