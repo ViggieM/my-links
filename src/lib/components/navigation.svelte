@@ -1,11 +1,19 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	let { supabase, user } = $props();
-	let logout = $derived(async () => {
+
+	async function logout() {
 		const { error } = await supabase.auth.signOut();
 		if (error) {
+			// todo: how can I render a nice error if for some reason the signout doesn't work?
 			console.error(error);
 		}
-	});
+
+		// fixme: is this fine to set the user to null on log out?
+		user = null;
+		// todo: render a nice success message after redirecting to the home page. Something like a banner
+		await goto('/');
+	}
 </script>
 
 <nav class="mb-4 bg-secondary p-2">

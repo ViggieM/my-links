@@ -1,6 +1,7 @@
 import { error as renderError } from '@sveltejs/kit';
 
-export const load = async ({ params, locals: { supabase } }) => {
+export const load = async ({ params, locals: { supabase }, depends }) => {
+	depends('supabase:auth');
 	const { data: blob, error } = await supabase
 		.from('blobs')
 		.select('id,title,url,notes,rating,blob_tags(tag_id,tags(name))')
