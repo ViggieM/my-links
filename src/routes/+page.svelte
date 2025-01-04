@@ -1,6 +1,7 @@
 <script lang="ts">
 	import TagBadge from '$lib/components/tagBadge.svelte';
 	import BlobListItem from '$lib/components/blobListItem.svelte';
+  import SearchBar from '$lib/components/searchBar.svelte';
 
 	let { data } = $props();
 	let { blobs } = $derived(data);
@@ -23,6 +24,7 @@
 </script>
 
 <div class="overflow-x-auto">
+  <SearchBar/>
 	<form action="" method="post" class="flex items-center gap-2 p-2">
 		<label class="input input-bordered flex grow items-center gap-2">
 			<input type="text" class="grow" placeholder="Search" id="search" />
