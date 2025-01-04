@@ -1,70 +1,87 @@
 import { SvelteMap } from 'svelte/reactivity';
-import type { ObjectOption } from 'svelte-multiselect';
-import { getAccessibleColor, hexToRGB } from '$lib';
 
 export const tags: SvelteMap<number, Tag> = new SvelteMap();
+// $derived(tags): Cannot export derived state from a module.
 export const areTagsLoaded = $state(false);
 
-export function getAncestors(tag: Tag): Set<number> {
-	const result: Set<number> = new Set();
+export class Tag {
+	readonly id: number;
+	readonly parentId: number | null;
+	name: string;
+	readonly #color?: string;
+	readonly defaultColor = `#ffffff`;
 
-	// remove all parent tags if a child tag is selected
-	if (tag.parent_id !== null) {
-		let current: Tag | undefined = tag;
-		while (current !== undefined && current.parent_id !== null) {
-			result.add(current.parent_id);
-			current = tags.get(current.parent_id);
+	constructor(tag: TagData) {
+		this.id = tag.id;
+		this.name = tag.name;
+		this.parentId = tag.parent_id;
+		this.#color = tag.color;
+	}
+
+	get parent() {
+		if (this.parentId === null) return;
+		return tags.get(this.parentId);
+	}
+
+	get ancestors(): Tag[] {
+		const result: Tag[] = [];
+		let current = this.parent;
+		while (current) {
+			result.push(current);
+			current = current.parent;
 		}
+		return result;
 	}
-	return result;
-}
 
-export function getDescendants(tag: Tag, ancestors: Set<number> = new Set()) {
-	if (Array.from(tags.values()).find((el) => el.parent_id === tag.id)) {
-		for (const childTag of Array.from(tags.values()).filter((el) => el.parent_id === tag.id)) {
-			ancestors.add(childTag.id);
-			ancestors = ancestors.union(getDescendants(childTag, ancestors));
+	get descendants() {
+		let result = new Set<Tag>();
+		for (const tag of this.children) {
+			result.add(tag);
+			result = result.union(tag.descendants);
 		}
-	}
-	return ancestors;
-}
-
-// todo: usage of this function should be replaced by getAncestors
-export function getParentIds(tagId: number): number[] {
-	const parents = [];
-	let current = tags.get(tagId);
-
-	while (current && current.parent_id !== undefined) {
-		if (current.parent_id === null) break;
-		parents.push(current.parent_id);
-		current = tags.get(current.parent_id);
+		return result;
 	}
 
-	return parents;
+	get siblings() {
+		return [...tags.values()].filter((i) => i.parentId === this.parentId && i.id !== this.id);
+	}
+
+	get level() {
+		return this.ancestors.length;
+	}
+
+	get color(): string {
+		if (this.#color) return this.#color;
+		if (this.parent) return this.parent.color;
+		return this.defaultColor;
+	}
+
+	get children() {
+		return Array.from(tags.values()).filter((el) => el.parentId === this.id);
+	}
 }
 
-export function getChildrenIds(tagId: number): number[] {
-	const children = [...tags.values()].filter((i) => i.parent_id === tagId);
-	return children.map((i) => i.id);
-}
-
-export function getVisibleTagIds(selectedTagIds: number[]): Set<number> {
-	const result: Set<number> = new Set();
+export function getVisibleTagIds(selectedTagIds: Set<number>): Set<number> {
+	let result: Set<number> = new Set();
 
 	for (const id of selectedTagIds) {
 		result.add(id);
+		const tag = tags.get(id);
+
+		if (!tag) continue;
 
 		// parents are visible
-		const parents = getParentIds(id);
-		parents.forEach((parentId) => result.add(parentId));
+		const ancestors = new Set(tag.ancestors.map((i) => i.id));
 
 		// all siblings and siblings of the parents are visible
-		const siblings = [...tags.values()].filter((i) => i.parent_id && parents.includes(i.parent_id));
-		siblings.forEach((sibling) => result.add(sibling.id));
+		const siblings = [...tags.values()]
+			.filter((i) => i.parentId && ancestors.has(i.parentId))
+			.map((i) => i.id);
 
 		// first level children are visible
-		const children = [...tags.values()].filter((i) => i.parent_id === id);
-		children.forEach((child) => result.add(child.id));
+		const children = tag.children.map((i) => i.id);
+
+		result = new Set([...result, ...ancestors, ...siblings, ...children]);
 	}
 
 	return result;
@@ -72,58 +89,18 @@ export function getVisibleTagIds(selectedTagIds: number[]): Set<number> {
 
 export function orderTags(tags: SvelteMap<number, Tag>) {
 	const result: Tag[] = [];
+	const topLevelTags = Array.from(tags.values()).filter((el) => el.parent === undefined);
+	for (const tag of topLevelTags) {
+		result.push(tag);
+		appendChildren(tag);
+	}
 
 	function appendChildren(tag: Tag) {
-		const children = [...tags.values()].filter((i) => i.parent_id === tag.id);
-		for (const child of children) {
-			child.level = (tag.level || 0) + 1;
+		for (const child of tag.children) {
 			result.push(child);
 			appendChildren(child);
 		}
 	}
 
-	for (const tag of tags.values()) {
-		if (tag.parent_id === null) {
-			tag.level = 0;
-			result.push(tag);
-			appendChildren(tag);
-		}
-	}
-
 	return result;
-}
-
-export function parseBadgeInlineStyle(r: number, g: number, b: number, a: number) {
-	return `color: ${getAccessibleColor(r, g, b)};
-	        background-color: rgba(${r}, ${g}, ${b}, ${a});`;
-}
-
-export function getTagColor(tag: Tag): string | undefined {
-	if (tag.color) return tag.color;
-	let current: Tag | undefined = tag;
-	const maxIter = 50;
-	for (let i = 0; i < maxIter; i++) {
-		if (current === undefined) return;
-		if (current.color) return current.color;
-		if (!current.parent_id) break;
-		current = tags.get(current.parent_id);
-	}
-}
-
-export function optionFromTag(tag: Tag): ObjectOption {
-	const tagColor = getTagColor(tag) || `#ffffff`;
-	const [r, g, b] = hexToRGB(tagColor);
-	const level = tag.level || 0;
-	const a = Math.max(1 - level / 10, 0.3);
-
-	return {
-		id: tag.id,
-		parent_id: tag.parent_id,
-		label: tag.name,
-		level: level,
-		style: {
-			option: parseBadgeInlineStyle(r, g, b, a),
-			selected: parseBadgeInlineStyle(r, g, b, a)
-		}
-	};
 }

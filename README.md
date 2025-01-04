@@ -111,6 +111,39 @@ Reference: [How to setup supabase locally with OAUTH providers | Alberto Sadde](
 
 - `pnpx supabase db push --linked` fails with "must be owner of table ...": see [cli - supabase db push as postgres user causes "ERROR: must be owner of table" · supabase · Discussion #6326](https://github.com/orgs/supabase/discussions/6326)
 
+#### Views
+
+[Tables and Data | Supabase Docs](https://supabase.com/docs/guides/database/tables?queryGroups=language&language=js#views)
+
+The query
+
+```javascript
+supabase
+	.from('blobs')
+	.select('title,uuid,url,notes,rating,blob_tags(tag_id)')
+	.limit(50)
+	.order('id');
+```
+
+is not easily filterable for the matching tags.
+I found it easier to create a view that contains the blob tag ids as an array column instead, that can be easily queried with `.overlaps()`.
+
+```sql
+create view
+  blobs_and_ids
+with
+  (security_invoker = true) as (
+    select
+      blobs.*,
+      ARRAY_AGG(blob_tags.tag_id) AS tag_ids
+    from
+      blobs
+      join blob_tags on blobs.id = blob_tags.blob_id
+    GROUP BY
+      blobs.id
+  );
+```
+
 ### Misc
 
 - `dotenvx` is not necessary, since vite reads the env variables on its own, see https://vite.dev/guide/env-and-mode.html#env-files .

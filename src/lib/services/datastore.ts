@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { areTagsLoaded, getTagColor, tags } from '$lib/stores/tags.svelte';
+import { areTagsLoaded, tags, Tag } from '$lib/stores/tags.svelte';
 
 export async function loadAllTagsFromSupabase(supabase: SupabaseClient) {
 	if (!areTagsLoaded) {
@@ -12,8 +12,7 @@ export async function loadAllTagsFromSupabase(supabase: SupabaseClient) {
 		}
 
 		for (const tag of data) {
-			tag.color = getTagColor(tag);
-			tags.set(tag.id, tag);
+			tags.set(tag.id, new Tag(tag));
 		}
 	}
 }
@@ -23,4 +22,27 @@ export async function setBlobTags(supabase: SupabaseClient, blobId: number, tagI
 	await supabase
 		.from('blob_tags')
 		.insert(tagIds.map((tagId) => ({ blob_id: blobId, tag_id: tagId })));
+}
+
+export class Bookmark {
+	title: string;
+	uuid: string;
+	url: string;
+	notes: string;
+	rating: number | null = null;
+	tags: Tag[] = [];
+
+	constructor(data: BlobData) {
+		this.title = data.title;
+		this.uuid = data.uuid;
+		this.url = data.url;
+		this.notes = data.notes;
+		this.rating = data.rating;
+		if (data.blob_tags) {
+			for (const tag of data.blob_tags) {
+				const tagg = tags.get(tag.tag_id);
+				if (tagg) this.tags.push(tagg);
+			}
+		}
+	}
 }
