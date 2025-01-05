@@ -7,7 +7,7 @@
     orderTags,
   } from '$lib/stores/tags.svelte';
 	import TagSlot from '$lib/components/TagSlot.svelte';
-  import MultiSelect, { type ObjectOption, type Option } from 'svelte-multiselect';
+  import MultiSelect, { type ObjectOption } from 'svelte-multiselect';
   import { optionFromTag } from '$lib';
 
 	const { selectedTagIds, supabase } = $props();
@@ -72,7 +72,7 @@
 	key={(opt: ObjectOption) => opt.id}
 	outerDivClass="p-0 -ml-0.5 border-none w-full [&_.remove-all]:hidden"
 	liSelectedClass="badge"
-	liOptionClass="badge"
+	liOptionClass="badge opacity-70"
 	ulOptionsClass="p-2 flex gap-1.5 flex-wrap"
 	allowUserOptions="append"
 	--sms-placeholder-opacity="0.7"

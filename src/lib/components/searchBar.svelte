@@ -85,7 +85,7 @@
 	<MultiSelect
 		{options}
 		outerDivClass="border-none [&_.remove-all]:hidden"
-		liOptionClass="badge"
+		liOptionClass="badge opacity-70"
 		liSelectedClass="badge"
 		ulOptionsClass="p-2 flex gap-1.5 flex-col"
 		--sms-placeholder-opacity="0.7"

@@ -28,6 +28,7 @@ export function getDescendants(tag: Tag, ancestors: Set<number> = new Set()) {
 	return ancestors;
 }
 
+// todo: selectedTagIds can be passed as a Set
 export function getVisibleTagIds(selectedTagIds: number[]): Set<number> {
 	const result: Set<number> = new Set();
 

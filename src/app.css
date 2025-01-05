@@ -4,10 +4,10 @@
 
 @layer base {
 	.badge.selected {
-		@apply outline outline-1 outline-offset-1 outline-gray-600;
+		@apply outline outline-1 outline-offset-1 outline-gray-600 opacity-100;
 	}
 	.badge.active {
-		@apply text-base outline outline-2 outline-offset-1 outline-gray-300;
+		@apply outline outline-2 outline-offset-1 outline-gray-300 opacity-100;
 	}
 	.user-msg {
 		@apply p-1;
