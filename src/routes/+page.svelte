@@ -5,7 +5,8 @@
 	import { enhance } from '$app/forms';
 
 	let { data } = $props();
-	let { blobs } = $derived(data);
+	let { blobs } = data;
+  let searchResults = $state(blobs)
 	let isCtrlDown = $state(false);
 	let isKDown = $state(false);
 
@@ -25,7 +26,15 @@
 </script>
 
 <div class="p-2">
-	<form action="?/search" method="post" use:enhance>
+	<form action="?/search" method="post" use:enhance={() => {
+    return async ({ result, update }) => {
+      await update();
+      if (result.type === 'success') {
+        searchResults = result.data || []
+        console.log(result);
+      }
+    };
+  }}>
 		<SearchBar />
 	</form>
 </div>
@@ -39,7 +48,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each blobs as blob}
+			{#each searchResults as blob}
 				<tr>
 					<td><BlobListItem {blob} /></td>
 					<td>

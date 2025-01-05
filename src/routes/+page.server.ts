@@ -37,5 +37,12 @@ export const actions = {
 		const query = data.get('query');
 		const tagIds = data.getAll('tagIds');
 		console.log(query, tagIds);
+
+    const { data: blobs } = await supabase
+      .from('blobs')
+      .select('title,uuid,url,notes,rating,blob_tags(tag_id)')
+      .limit(1)
+      .order('id');
+    return blobs
 	}
 };
