@@ -31,5 +31,11 @@ export const actions = {
 		} else {
 			redirect(303, '/');
 		}
+	},
+  search: async ({ request, locals: { supabase } }) => {
+    const data = await request.formData();
+    const query = data.get("query")
+    const tagIds = data.getAll("tagIds")
+    console.log(query, tagIds)
 	}
 };
