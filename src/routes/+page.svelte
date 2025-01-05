@@ -1,8 +1,8 @@
 <script lang="ts">
 	import TagBadge from '$lib/components/tagBadge.svelte';
 	import BlobListItem from '$lib/components/blobListItem.svelte';
-  import SearchBar from '$lib/components/searchBar.svelte';
-  import { enhance } from '$app/forms';
+	import SearchBar from '$lib/components/searchBar.svelte';
+	import { enhance } from '$app/forms';
 
 	let { data } = $props();
 	let { blobs } = $derived(data);
@@ -25,13 +25,12 @@
 </script>
 
 <div class="p-2">
-  <form action="?/search" method="post" use:enhance>
-    <SearchBar/>
-  </form>
+	<form action="?/search" method="post" use:enhance>
+		<SearchBar />
+	</form>
 </div>
 
 <div class="overflow-x-auto">
-
 	<table class="table">
 		<thead>
 			<tr>
