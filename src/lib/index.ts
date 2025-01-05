@@ -1,4 +1,4 @@
-import { tags } from '$lib/stores/tags.svelte';
+import { Tag } from '$lib/stores/tags.svelte';
 import type { ObjectOption } from 'svelte-multiselect';
 
 export const getAccessibleColor = (r: number, g: number, b: number) => {
@@ -22,36 +22,23 @@ export function rgbToHex(r: number, g: number, b: number) {
 }
 
 export function parseBadgeInlineStyle(r: number, g: number, b: number, a: number) {
-  return `color: ${getAccessibleColor(r, g, b)};
+	return `color: ${getAccessibleColor(r, g, b)};
 	        background-color: rgba(${r}, ${g}, ${b}, ${a});`;
 }
 
-export function getTagColor(tag: Tag): string | undefined {
-  if (tag.color) return tag.color;
-  let current: Tag | undefined = tag;
-  const maxIter = 50;
-  for (let i = 0; i < maxIter; i++) {
-    if (current === undefined) return;
-    if (current.color) return current.color;
-    if (!current.parent_id) break;
-    current = tags.get(current.parent_id);
-  }
-}
+export function optionFromTagg(tag: Tag): ObjectOption {
+	const [r, g, b] = hexToRGB(tag.color);
+	const level = tag.level || 0;
+	const a = Math.max(1 - level / 10, 0.3);
 
-export function optionFromTag(tag: Tag): ObjectOption {
-  const tagColor = getTagColor(tag) || `#ffffff`;
-  const [r, g, b] = hexToRGB(tagColor);
-  const level = tag.level || 0;
-  const a = Math.max(1 - level / 10, 0.3);
-
-  return {
-    id: tag.id,
-    parent_id: tag.parent_id,
-    label: tag.name,
-    level: level,
-    style: {
-      option: parseBadgeInlineStyle(r, g, b, a),
-      selected: parseBadgeInlineStyle(r, g, b, a)
-    }
-  };
+	return {
+		id: tag.id,
+		parent_id: tag.parentId,
+		label: tag.name,
+		level: level,
+		style: {
+			option: parseBadgeInlineStyle(r, g, b, a),
+			selected: parseBadgeInlineStyle(r, g, b, a)
+		}
+	};
 }

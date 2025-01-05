@@ -1,26 +1,19 @@
 <script lang="ts">
-	import {
-		getAncestors,
-		getDescendants,
-		getVisibleTagIds,
-    tags,
-    orderTags,
-  } from '$lib/stores/tags.svelte';
+	import { getVisibleTagIds, tags, orderTags, Tag } from '$lib/stores/tags.svelte';
 	import TagSlot from '$lib/components/TagSlot.svelte';
-  import MultiSelect, { type ObjectOption } from 'svelte-multiselect';
-  import { optionFromTag } from '$lib';
+	import MultiSelect, { type ObjectOption } from 'svelte-multiselect';
+	import { optionFromTagg } from '$lib';
 
 	const { selectedTagIds, supabase } = $props();
-	const visibleTags = $derived(getVisibleTagIds([...selectedTagIds]));
-
+	const visibleTags = $derived(getVisibleTagIds(selectedTagIds));
 	const orderedTags = orderTags(tags);
-	const options: ObjectOption[] = orderedTags.map(optionFromTag);
+	const options: ObjectOption[] = orderedTags.map(optionFromTagg);
 	let selected: ObjectOption[] = $state(
-		[...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag)
+		[...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTagg)
 	);
 
 	$effect(() => {
-		selected = [...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag);
+		selected = [...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTagg);
 	});
 
 	function filterFunc(opt: ObjectOption, searchText: string) {
@@ -40,7 +33,7 @@
 				.select()
 				.maybeSingle();
 			evt.detail.option.id = tag.id;
-			tags.set(tag.id, tag);
+			tags.set(tag.id, new Tag(tag));
 			tagId = tag.id;
 		}
 
@@ -49,27 +42,23 @@
 		} else {
 			selectedTagIds.add(tagId);
 			const tag = tags.get(tagId);
-			for (let i of getAncestors(tag)) {
-				selectedTagIds.delete(i);
+			if (!tag) return;
+			for (let ancestor of tag.ancestors) {
+				selectedTagIds.delete(ancestor.id);
 			}
-			for (let i of getDescendants(tag)) {
-				selectedTagIds.delete(i);
+			for (let descendant of tag.descendants) {
+				selectedTagIds.delete(descendant.id);
 			}
 		}
-
-		selected = [...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag);
 	}
 
-	async function onRemove(evt) {
+	async function onRemove(evt: CustomEvent) {
 		const tagId = evt.detail.option.id;
 		selectedTagIds.delete(tagId);
 	}
 </script>
 
 <MultiSelect
-	bind:selected
-	{options}
-	key={(opt: ObjectOption) => opt.id}
 	outerDivClass="p-0 -ml-0.5 border-none w-full [&_.remove-all]:hidden"
 	liSelectedClass="badge"
 	liOptionClass="badge opacity-70"
@@ -77,6 +66,9 @@
 	allowUserOptions="append"
 	--sms-placeholder-opacity="0.7"
 	placeholder="no tags selected"
+	bind:selected
+	{options}
+	key={(opt: ObjectOption) => opt.id}
 	{filterFunc}
 	selectedOptionsDraggable={false}
 	closeDropdownOnSelect={false}

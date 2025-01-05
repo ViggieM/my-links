@@ -1,11 +1,11 @@
 <script lang="ts">
-	const { blob } = $props();
+	const { bookmark } = $props();
 </script>
 
 <div class="flex items-center gap-2">
-	<a href="/blob/{blob.uuid}">{blob.title}</a>
-	{#if blob.url}
-		<a href={blob.url} target="_blank" aria-label="external link" class="text-gray-600">
+	<a href="/blob/{bookmark.uuid}">{bookmark.title}</a>
+	{#if bookmark.url}
+		<a href={bookmark.url} target="_blank" aria-label="external link" class="text-gray-600">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"

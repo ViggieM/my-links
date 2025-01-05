@@ -16,7 +16,7 @@
 	}
 </script>
 
-<nav class="mb-4 bg-secondary p-2">
+<nav class="mb-4 bg-primary p-2">
 	<div class="container mx-auto flex gap-2">
 		{#if !user}
 			<form action="?/login" method="POST">

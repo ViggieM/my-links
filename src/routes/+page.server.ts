@@ -4,14 +4,14 @@ import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async ({ depends, locals: { supabase } }) => {
 	depends('supabase:db:blobs');
-	const { data: blobs } = await supabase
+	const { data: bookmarks } = await supabase
 		.from('blobs')
 		.select('title,uuid,url,notes,rating,blob_tags(tag_id)')
 		.limit(50)
 		.order('id');
 
 	return {
-		blobs: blobs ?? []
+		bookmarks
 	};
 };
 
@@ -38,11 +38,11 @@ export const actions = {
 		const tagIds = data.getAll('tagIds');
 		console.log(query, tagIds);
 
-    const { data: blobs } = await supabase
-      .from('blobs')
-      .select('title,uuid,url,notes,rating,blob_tags(tag_id)')
-      .limit(1)
-      .order('id');
-    return blobs
+		const { data: blobs } = await supabase
+			.from('blobs')
+			.select('title,uuid,url,notes,rating,blob_tags(tag_id)')
+			.limit(1)
+			.order('id');
+		return blobs;
 	}
 };

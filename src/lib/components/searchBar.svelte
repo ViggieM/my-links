@@ -2,10 +2,10 @@
 	import { tags, orderTags } from '$lib/stores/tags.svelte';
 	import MultiSelect, { type ObjectOption } from 'svelte-multiselect';
 	import TagSlot from '$lib/components/TagSlot.svelte';
-  import { optionFromTag } from '$lib';
+	import { optionFromTagg } from '$lib';
 
 	const orderedTags = orderTags(tags);
-	const options: ObjectOption[] = orderedTags.map(optionFromTag);
+	const options: ObjectOption[] = orderedTags.map(optionFromTagg);
 	let selected: ObjectOption[] = $state([]);
 	let isOpen = $state(false);
 	let selectInput: HTMLInputElement | null = $state(null);

@@ -3,10 +3,11 @@
 	import BlobListItem from '$lib/components/blobListItem.svelte';
 	import SearchBar from '$lib/components/searchBar.svelte';
 	import { enhance } from '$app/forms';
+	import { Bookmark } from '$lib/services/datastore';
 
 	let { data } = $props();
-	let { blobs } = data;
-  let searchResults = $state(blobs)
+	let { bookmarks } = data;
+	const list = bookmarks?.map((el) => new Bookmark(el)) ?? [];
 	let isCtrlDown = $state(false);
 	let isKDown = $state(false);
 
@@ -26,15 +27,19 @@
 </script>
 
 <div class="p-2">
-	<form action="?/search" method="post" use:enhance={() => {
-    return async ({ result, update }) => {
-      await update();
-      if (result.type === 'success') {
-        searchResults = result.data || []
-        console.log(result);
-      }
-    };
-  }}>
+	<form
+		action="?/search"
+		method="post"
+		use:enhance={() => {
+			return async ({ result, update }) => {
+				await update();
+				if (result.type === 'success') {
+					searchResults = result.data || [];
+					console.log(result);
+				}
+			};
+		}}
+	>
 		<SearchBar />
 	</form>
 </div>
@@ -48,13 +53,13 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each searchResults as blob}
+			{#each list as bookmark}
 				<tr>
-					<td><BlobListItem {blob} /></td>
+					<td><BlobListItem {bookmark} /></td>
 					<td>
 						<div class="flex gap-1">
-							{#each blob.blob_tags as tag}
-								<TagBadge id={tag.tag_id} />
+							{#each bookmark.tags as tag}
+								<TagBadge {tag} />
 							{/each}
 						</div>
 					</td>
