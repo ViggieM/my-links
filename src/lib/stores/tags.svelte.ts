@@ -1,8 +1,7 @@
 import { SvelteMap } from 'svelte/reactivity';
-import type { ObjectOption } from 'svelte-multiselect';
-import { getAccessibleColor, hexToRGB } from '$lib';
 
 export const tags: SvelteMap<number, Tag> = new SvelteMap();
+// $derived(tags): Cannot export derived state from a module.
 export const areTagsLoaded = $state(false);
 
 export function getAncestors(tag: Tag): Set<number> {
@@ -41,11 +40,6 @@ export function getParentIds(tagId: number): number[] {
 	}
 
 	return parents;
-}
-
-export function getChildrenIds(tagId: number): number[] {
-	const children = [...tags.values()].filter((i) => i.parent_id === tagId);
-	return children.map((i) => i.id);
 }
 
 export function getVisibleTagIds(selectedTagIds: number[]): Set<number> {
@@ -91,39 +85,4 @@ export function orderTags(tags: SvelteMap<number, Tag>) {
 	}
 
 	return result;
-}
-
-export function parseBadgeInlineStyle(r: number, g: number, b: number, a: number) {
-	return `color: ${getAccessibleColor(r, g, b)};
-	        background-color: rgba(${r}, ${g}, ${b}, ${a});`;
-}
-
-export function getTagColor(tag: Tag): string | undefined {
-	if (tag.color) return tag.color;
-	let current: Tag | undefined = tag;
-	const maxIter = 50;
-	for (let i = 0; i < maxIter; i++) {
-		if (current === undefined) return;
-		if (current.color) return current.color;
-		if (!current.parent_id) break;
-		current = tags.get(current.parent_id);
-	}
-}
-
-export function optionFromTag(tag: Tag): ObjectOption {
-	const tagColor = getTagColor(tag) || `#ffffff`;
-	const [r, g, b] = hexToRGB(tagColor);
-	const level = tag.level || 0;
-	const a = Math.max(1 - level / 10, 0.3);
-
-	return {
-		id: tag.id,
-		parent_id: tag.parent_id,
-		label: tag.name,
-		level: level,
-		style: {
-			option: parseBadgeInlineStyle(r, g, b, a),
-			selected: parseBadgeInlineStyle(r, g, b, a)
-		}
-	};
 }

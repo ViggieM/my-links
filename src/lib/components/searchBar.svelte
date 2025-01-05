@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { tags, optionFromTag, orderTags } from '$lib/stores/tags.svelte';
+	import { tags, orderTags } from '$lib/stores/tags.svelte';
 	import MultiSelect, { type ObjectOption } from 'svelte-multiselect';
 	import TagSlot from '$lib/components/TagSlot.svelte';
+  import { optionFromTag } from '$lib';
 
 	const orderedTags = orderTags(tags);
 	const options: ObjectOption[] = orderedTags.map(optionFromTag);

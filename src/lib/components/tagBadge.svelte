@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { getTagColor, parseBadgeInlineStyle, tags } from '$lib/stores/tags.svelte';
-	import { hexToRGB } from '$lib';
+	import { tags } from '$lib/stores/tags.svelte';
+  import { getTagColor, hexToRGB, parseBadgeInlineStyle } from '$lib';
 
 	const { id } = $props();
 	const tag = tags.get(id);

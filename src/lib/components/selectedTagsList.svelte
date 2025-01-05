@@ -2,13 +2,13 @@
 	import {
 		getAncestors,
 		getDescendants,
-		orderTags,
 		getVisibleTagIds,
-		optionFromTag,
-		tags
-	} from '$lib/stores/tags.svelte';
+    tags,
+    orderTags,
+  } from '$lib/stores/tags.svelte';
 	import TagSlot from '$lib/components/TagSlot.svelte';
-	import MultiSelect, { type ObjectOption, type Option } from 'svelte-multiselect';
+  import MultiSelect, { type ObjectOption, type Option } from 'svelte-multiselect';
+  import { optionFromTag } from '$lib';
 
 	const { selectedTagIds, supabase } = $props();
 	const visibleTags = $derived(getVisibleTagIds([...selectedTagIds]));
@@ -23,15 +23,14 @@
 		selected = [...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag);
 	});
 
-	function filterFunc(opt: Option, searchText: string) {
+	function filterFunc(opt: ObjectOption, searchText: string) {
 		if (searchText) {
 			return `${opt.label}`.toLowerCase().includes(searchText.toLowerCase());
 		}
 		return visibleTags.has(opt.id) || opt.parent_id === null;
 	}
 
-	async function onAdd(evt) {
-		console.log(evt);
+	async function onAdd(evt: CustomEvent) {
 		let tagId = evt.detail.option.id;
 		if (!tagId) {
 			const name = evt.detail.option.label;

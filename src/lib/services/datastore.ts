@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { areTagsLoaded, getTagColor, tags } from '$lib/stores/tags.svelte';
+import { areTagsLoaded, tags } from '$lib/stores/tags.svelte';
+import { getTagColor } from '$lib';
 
 export async function loadAllTagsFromSupabase(supabase: SupabaseClient) {
 	if (!areTagsLoaded) {
