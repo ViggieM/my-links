@@ -28,32 +28,21 @@ export function getDescendants(tag: Tag, ancestors: Set<number> = new Set()) {
 	return ancestors;
 }
 
-// todo: usage of this function should be replaced by getAncestors
-export function getParentIds(tagId: number): number[] {
-	const parents = [];
-	let current = tags.get(tagId);
-
-	while (current && current.parent_id !== undefined) {
-		if (current.parent_id === null) break;
-		parents.push(current.parent_id);
-		current = tags.get(current.parent_id);
-	}
-
-	return parents;
-}
-
 export function getVisibleTagIds(selectedTagIds: number[]): Set<number> {
 	const result: Set<number> = new Set();
 
 	for (const id of selectedTagIds) {
 		result.add(id);
+    const tag = tags.get(id)
+
+    if (!tag) continue
 
 		// parents are visible
-		const parents = getParentIds(id);
+		const parents = getAncestors(tag);
 		parents.forEach((parentId) => result.add(parentId));
 
 		// all siblings and siblings of the parents are visible
-		const siblings = [...tags.values()].filter((i) => i.parent_id && parents.includes(i.parent_id));
+		const siblings = [...tags.values()].filter((i) => i.parent_id && parents.has(i.parent_id));
 		siblings.forEach((sibling) => result.add(sibling.id));
 
 		// first level children are visible
