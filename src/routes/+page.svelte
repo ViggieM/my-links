@@ -26,11 +26,7 @@
 </script>
 
 <div class="p-2">
-	<form
-    data-sveltekit-keepfocus
-		action="?/search"
-		method="get"
-	>
+	<form data-sveltekit-keepfocus action="?/search" method="get">
 		<SearchBar />
 	</form>
 </div>

@@ -4,7 +4,7 @@
 	import TagSlot from '$lib/components/TagSlot.svelte';
 	import { optionFromTagg } from '$lib';
 
-  let {value=$bindable()} = $props()
+	let { value = $bindable() } = $props();
 
 	const orderedTags = orderTags(tags);
 	const options: ObjectOption[] = orderedTags.map(optionFromTagg);
