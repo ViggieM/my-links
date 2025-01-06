@@ -4,13 +4,14 @@
 	import TagSlot from '$lib/components/TagSlot.svelte';
 	import { optionFromTagg } from '$lib';
 
+  let {value=$bindable()} = $props()
+
 	const orderedTags = orderTags(tags);
 	const options: ObjectOption[] = orderedTags.map(optionFromTagg);
 	let selected: ObjectOption[] = $state([]);
 	let isOpen = $state(false);
 	let selectInput: HTMLInputElement | null = $state(null);
 	let searchInput: HTMLInputElement | null = $state(null);
-	let value = $state('');
 
 	function onkeyup(evt: KeyboardEvent) {
 		if (evt.key === '#') {
@@ -19,7 +20,7 @@
 	}
 
 	function trimToLastHash(input: string) {
-		const lastHashIndex = input.lastIndexOf('#');
+		const lastHashIndex = input?.lastIndexOf('#') || -1;
 		return lastHashIndex === -1 ? input : input.slice(0, lastHashIndex).trim();
 	}
 </script>
@@ -27,7 +28,7 @@
 <div class="p-2">
 	<label class="input input-bordered flex w-full cursor-text items-stretch pr-0">
 		<input
-			name="query"
+			name="q"
 			class="grow outline-none"
 			autocomplete="off"
 			placeholder="Search"
