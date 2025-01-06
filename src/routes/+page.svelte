@@ -49,7 +49,7 @@
 					<td><BlobListItem {bookmark} /></td>
 					<td>
 						<div class="flex gap-1">
-							{#each bookmark.tags as tag}
+							{#each bookmark.tags as tag (tag.id)}
 								<TagBadge {tag} />
 							{/each}
 						</div>

@@ -20,7 +20,7 @@
 	}
 
 	function trimToLastHash(input: string) {
-		const lastHashIndex = input?.lastIndexOf('#') || -1;
+		const lastHashIndex = input ? input.lastIndexOf('#') : -1;
 		return lastHashIndex === -1 ? input : input.slice(0, lastHashIndex).trim();
 	}
 </script>
