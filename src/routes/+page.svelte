@@ -2,12 +2,11 @@
 	import TagBadge from '$lib/components/tagBadge.svelte';
 	import BlobListItem from '$lib/components/blobListItem.svelte';
 	import SearchBar from '$lib/components/searchBar.svelte';
-	import { enhance } from '$app/forms';
 	import { Bookmark } from '$lib/services/datastore';
 
 	let { data } = $props();
-	let { bookmarks } = data;
-	const list = bookmarks?.map((el) => new Bookmark(el)) ?? [];
+	let { bookmarksData } = $derived(data);
+	let bookmarks = $derived(bookmarksData?.map((el) => new Bookmark(el)) ?? []);
 	let isCtrlDown = $state(false);
 	let isKDown = $state(false);
 
@@ -28,17 +27,9 @@
 
 <div class="p-2">
 	<form
+    data-sveltekit-keepfocus
 		action="?/search"
-		method="post"
-		use:enhance={() => {
-			return async ({ result, update }) => {
-				await update();
-				if (result.type === 'success') {
-					searchResults = result.data || [];
-					console.log(result);
-				}
-			};
-		}}
+		method="get"
 	>
 		<SearchBar />
 	</form>
@@ -53,7 +44,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each list as bookmark}
+			{#each bookmarks as bookmark}
 				<tr>
 					<td><BlobListItem {bookmark} /></td>
 					<td>

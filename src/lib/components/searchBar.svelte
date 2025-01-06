@@ -104,5 +104,5 @@
 </div>
 
 {#each selected as selectedTag}
-	<input type="hidden" name="tagIds" value={selectedTag.id} />
+	<input type="hidden" name="tag" value={selectedTag.id} />
 {/each}
