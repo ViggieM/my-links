@@ -95,8 +95,10 @@
 		bind:input={selectInput}
 		bind:open={isOpen}
 		bind:selected
-		on:add={() => (value = trimToLastHash(value))}
-		on:close={() => searchInput?.focus()}
+		on:add={() => {
+			value = trimToLastHash(value);
+			searchInput?.focus();
+		}}
 		let:option
 	>
 		<span slot="expand-icon"></span>

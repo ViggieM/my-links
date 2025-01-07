@@ -32,24 +32,11 @@
 </div>
 
 <div class="overflow-x-auto">
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Title</th>
-				<th>Tags</th>
-			</tr>
-		</thead>
+	<table class="table table-lg">
 		<tbody>
 			{#each bookmarks as bookmark}
 				<tr>
 					<td><BlobListItem {bookmark} /></td>
-					<td>
-						<div class="flex gap-1">
-							{#each bookmark.tags as tag (tag.id)}
-								<TagBadge {tag} />
-							{/each}
-						</div>
-					</td>
 				</tr>
 			{/each}
 		</tbody>
