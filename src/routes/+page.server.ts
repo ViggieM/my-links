@@ -1,33 +1,15 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
+import { filterBlobs } from '$lib/services/datastore';
 
 export const load: PageServerLoad = async ({ url, depends, locals: { supabase } }) => {
 	depends('supabase:db:blobs');
 
 	const queryString = url.searchParams.get('q') || '';
-	const tags = url.searchParams.getAll('tag') || [];
+	const tags = url.searchParams.getAll('tag').map(Number).filter(Number.isFinite);
 
-	let query = supabase
-		.from('blobs')
-		.select('title,uuid,url,notes,rating,blob_tags(tag_id)')
-		.limit(50)
-		.order('id');
-
-	if (queryString) {
-		query = query.ilike('title', `%${queryString}%`);
-	}
-
-	if (tags.length > 0) {
-		const { data: matchedBlobs } = await supabase
-			.from('blobs_and_ids')
-			.select('id,tag_ids')
-			.overlaps('tag_ids', tags);
-		const blobIds = matchedBlobs ? matchedBlobs.map((el) => el.id) : [];
-		query = query.in('id', blobIds);
-	}
-
-	const { data: bookmarksData } = await query;
+	const { data: bookmarksData } = await filterBlobs(supabase, queryString, tags);
 
 	return {
 		bookmarksData
