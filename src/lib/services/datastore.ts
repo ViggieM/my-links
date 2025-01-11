@@ -1,19 +1,18 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { areTagsLoaded, tags, Tag } from '$lib/stores/tags.svelte';
+import { Tag, tags } from '$lib/stores/tags.svelte';
+import { Bookmark } from '$lib/services/utilities';
+import { debounce } from '$lib';
 
-export async function loadAllTagsFromSupabase(supabase: SupabaseClient) {
-	if (!areTagsLoaded) {
-		const { data, error } = await supabase.from('tags').select('id,name,parent_id,color');
+export async function loadTagsFromSupabase(supabase: SupabaseClient) {
+	const { data, error } = await supabase.from('tags').select('id,name,parent_id,color');
 
-		if (error) {
-			// todo: handle error
-			console.log(error);
-			return;
-		}
+	if (error) {
+		console.log(error);
+		return;
+	}
 
-		for (const tag of data) {
-			tags.set(tag.id, new Tag(tag));
-		}
+	for (const tag of data) {
+		tags.set(tag.id, new Tag(tag));
 	}
 }
 
@@ -24,8 +23,12 @@ export async function setBlobTags(supabase: SupabaseClient, blobId: number, tagI
 		.insert(tagIds.map((tagId) => ({ blob_id: blobId, tag_id: tagId })));
 }
 
-export async function filterBlobs(supabase: SupabaseClient, queryString: string = '', tags: number[] = []) {
-  let query = supabase
+export async function filterBlobs(
+	supabase: SupabaseClient,
+	queryString: string = '',
+	tags: number[] = []
+) {
+	let query = supabase
 		.from('blobs')
 		.select('title,uuid,url,notes,rating,blob_tags(tag_id)')
 		.limit(50)
@@ -43,28 +46,9 @@ export async function filterBlobs(supabase: SupabaseClient, queryString: string 
 		const blobIds = matchedBlobs ? matchedBlobs.map((el) => el.id) : [];
 		query = query.in('id', blobIds);
 	}
-  return query;
+
+	const { data } = await query;
+	return data?.map((el) => new Bookmark(el)) ?? [];
 }
 
-export class Bookmark {
-	title: string;
-	uuid: string;
-	url: string;
-	notes: string;
-	rating: number | null = null;
-	tags: Tag[] = [];
-
-	constructor(data: BlobData) {
-		this.title = data.title;
-		this.uuid = data.uuid;
-		this.url = data.url;
-		this.notes = data.notes;
-		this.rating = data.rating;
-		if (data.blob_tags) {
-			for (const tag of data.blob_tags) {
-				const tagg = tags.get(tag.tag_id);
-				if (tagg) this.tags.push(tagg);
-			}
-		}
-	}
-}
+export const debouncedFilterBlobs = debounce(filterBlobs, 300);

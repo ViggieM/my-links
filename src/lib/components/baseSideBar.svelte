@@ -33,7 +33,7 @@
 <div class="drawer-side">
 	<label for="sidebar" aria-label="close sidebar" class="drawer-overlay" bind:this={label}></label>
 	<ul
-		class="menu min-h-full w-full bg-base-200 p-4 text-base-content sm:w-1/2 xl:w-1/3"
+		class="menu min-h-full w-[90%] bg-base-200 p-4 text-base-content sm:w-1/2 xl:w-1/3"
 		{ontouchstart}
 		{ontouchend}
 		{ontouchmove}

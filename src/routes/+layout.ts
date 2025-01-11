@@ -1,8 +1,9 @@
 import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 import type { LayoutLoad } from './$types';
+import { browser } from '$app/environment';
 
-import { loadAllTagsFromSupabase } from '$lib/services/datastore';
+import { loadTagsFromSupabase } from '$lib/services/datastore';
 
 export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	/**
@@ -28,9 +29,6 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 				}
 			});
 
-	// todo: is this safe to do serverside? or should I only do it if isBrowser() ?
-	await loadAllTagsFromSupabase(supabase);
-
 	/**
 	 * It's fine to use `getSession` here, because on the client, `getSession` is
 	 * safe, and on the server, it reads `session` from the `LayoutData`, which
@@ -43,6 +41,12 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	const {
 		data: { user }
 	} = await supabase.auth.getUser();
+
+	/**
+	 * Load tags from supabase. We do this also server side, to prerender components correctly, such
+	 * as MultiSelect
+	 */
+	await loadTagsFromSupabase(supabase);
 
 	return { session, supabase, user };
 };

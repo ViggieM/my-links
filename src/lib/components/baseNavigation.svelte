@@ -9,9 +9,9 @@
 			console.error(error);
 		}
 
-		// fixme: is this fine to set the user to null on log out?
 		user = null;
 		// todo: render a nice success message after redirecting to the home page. Something like a banner
+		//  create a store for messages
 		await goto('/');
 	}
 </script>

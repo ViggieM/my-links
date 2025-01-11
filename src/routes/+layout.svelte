@@ -2,8 +2,8 @@
 	import '../app.css';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import Navigation from '$lib/components/navigation.svelte';
-	import SideBar from '$lib/components/sideBar.svelte';
+	import Navigation from '$lib/components/baseNavigation.svelte';
+	import SideBar from '$lib/components/baseSideBar.svelte';
 
 	let { data, children } = $props();
 	let { session, supabase, user } = data;

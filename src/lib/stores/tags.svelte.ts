@@ -2,7 +2,6 @@ import { SvelteMap } from 'svelte/reactivity';
 
 export const tags: SvelteMap<number, Tag> = new SvelteMap();
 // $derived(tags): Cannot export derived state from a module.
-export const areTagsLoaded = $state(false);
 
 export class Tag {
 	readonly id: number;

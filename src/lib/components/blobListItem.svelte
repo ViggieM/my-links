@@ -16,7 +16,7 @@
 			</a>
 		</span>
 	{/if}
-	<span class="mt-2 block flex gap-1">
+	<span class="mt-2 block flex flex-wrap gap-1">
 		{#each bookmark.tags as tag (tag.id)}
 			<TagBadge {tag} />
 		{/each}

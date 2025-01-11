@@ -2,18 +2,18 @@
 	import { getVisibleTagIds, tags, orderTags, Tag } from '$lib/stores/tags.svelte';
 	import TagSlot from '$lib/components/TagSlot.svelte';
 	import MultiSelect, { type ObjectOption } from 'svelte-multiselect';
-	import { optionFromTagg } from '$lib';
+	import { optionFromTag } from '$lib';
 
 	const { selectedTagIds, supabase } = $props();
 	const visibleTags = $derived(getVisibleTagIds(selectedTagIds));
 	const orderedTags = orderTags(tags);
-	const options: ObjectOption[] = orderedTags.map(optionFromTagg);
+	const options: ObjectOption[] = orderedTags.map(optionFromTag);
 	let selected: ObjectOption[] = $state(
-		[...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTagg)
+		[...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag)
 	);
 
 	$effect(() => {
-		selected = [...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTagg);
+		selected = [...tags.values()].filter((tag) => selectedTagIds.has(tag.id)).map(optionFromTag);
 	});
 
 	function filterFunc(opt: ObjectOption, searchText: string) {

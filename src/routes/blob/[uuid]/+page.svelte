@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SelectedTagsList from '$lib/components/selectedTagsList.svelte';
+	import TagsSelectedList from '$lib/components/tagsSelectedList.svelte';
 	import ExternalLinkIcon from '$lib/icons/external-link.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { setBlobTags } from '$lib/services/datastore';
@@ -24,11 +24,11 @@
 
 <article>
 	<h1 class="mb-2 text-2xl">
-		<a href={blob.url} target="_blank" class="flex items-center gap-2"
-			>{blob.title}<ExternalLinkIcon class={'size-5'} /></a
-		>
+		<a href={blob.url} target="_blank" class="flex items-center gap-2">
+			{blob.title}<ExternalLinkIcon class={'size-5'} />
+		</a>
 	</h1>
 	<div class="flex flex-col gap-2">
-		<SelectedTagsList {blob} {selectedTagIds} {supabase}></SelectedTagsList>
+		<TagsSelectedList {blob} {selectedTagIds} {supabase}></TagsSelectedList>
 	</div>
 </article>

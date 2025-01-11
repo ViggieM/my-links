@@ -26,7 +26,7 @@ export function parseBadgeInlineStyle(r: number, g: number, b: number, a: number
 	        background-color: rgba(${r}, ${g}, ${b}, ${a});`;
 }
 
-export function optionFromTagg(tag: Tag): ObjectOption {
+export function optionFromTag(tag: Tag): ObjectOption {
 	const [r, g, b] = hexToRGB(tag.color);
 	const level = tag.level || 0;
 	const a = Math.max(1 - level / 10, 0.3);
@@ -40,5 +40,15 @@ export function optionFromTagg(tag: Tag): ObjectOption {
 			option: parseBadgeInlineStyle(r, g, b, a),
 			selected: parseBadgeInlineStyle(r, g, b, a)
 		}
+	};
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export function debounce(callback: Function, wait = 300) {
+	let timeout: ReturnType<typeof setTimeout>;
+
+	return (...args: any[]) => {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => callback(...args), wait);
 	};
 }
