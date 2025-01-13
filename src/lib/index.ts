@@ -29,7 +29,7 @@ export function parseBadgeInlineStyle(r: number, g: number, b: number, a: number
 export function optionFromTag(tag: Tag): ObjectOption {
 	const [r, g, b] = hexToRGB(tag.color);
 	const level = tag.level || 0;
-	const a = Math.max(1 - level / 10, 0.3);
+	const a = Math.max(0.8 - level / 10, 0.3);
 
 	return {
 		id: tag.id,

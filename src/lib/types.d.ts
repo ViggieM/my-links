@@ -7,6 +7,7 @@ type TagData = {
 };
 
 type BlobData = {
+	id: number;
 	uuid: string;
 	title: string;
 	url: string;

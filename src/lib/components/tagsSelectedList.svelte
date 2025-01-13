@@ -60,7 +60,7 @@
 
 <MultiSelect
 	outerDivClass="p-0 -ml-0.5 border-none w-full [&_.remove-all]:hidden"
-	liSelectedClass="badge"
+	liSelectedClass="badge border-none shadow m-0 mr-1.5"
 	liOptionClass="badge opacity-70"
 	ulOptionsClass="p-2 flex gap-1.5 flex-wrap"
 	allowUserOptions="append"

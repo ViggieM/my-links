@@ -1,9 +1,17 @@
 <script lang="ts">
 	import TagBadge from '$lib/components/tagBadge.svelte';
+	import { setSidebar } from '$lib/components/baseSideBar.svelte';
+
 	const { bookmark } = $props();
 </script>
 
-<label for="sidebar" class="drawer-button cursor-pointer gap-2">
+<label
+	for="sidebar"
+	class="drawer-button cursor-pointer gap-2"
+	onclick={() => {
+		setSidebar(bookmark);
+	}}
+>
 	{#if bookmark.url}
 		<span class="block">
 			<a

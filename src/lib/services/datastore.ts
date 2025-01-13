@@ -30,7 +30,7 @@ export async function filterBlobs(
 ) {
 	let query = supabase
 		.from('blobs')
-		.select('title,uuid,url,notes,rating,blob_tags(tag_id)')
+		.select('id,title,uuid,url,notes,rating,blob_tags(tag_id)')
 		.limit(50)
 		.order('id');
 

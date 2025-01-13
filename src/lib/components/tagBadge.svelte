@@ -8,6 +8,4 @@
 	const style = parseBadgeInlineStyle(r, g, b, a);
 </script>
 
-<span class="badge shrink-0 select-none border-none shadow" draggable="true" {style}
-	>{tag.name}</span
->
+<span class="badge shrink-0 select-none border-none shadow" {style}>{tag.name}</span>

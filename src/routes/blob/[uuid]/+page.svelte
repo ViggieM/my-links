@@ -29,6 +29,6 @@
 		</a>
 	</h1>
 	<div class="flex flex-col gap-2">
-		<TagsSelectedList {blob} {selectedTagIds} {supabase}></TagsSelectedList>
+		<TagsSelectedList {selectedTagIds} {supabase}></TagsSelectedList>
 	</div>
 </article>

@@ -8,6 +8,8 @@
 	let { data, children } = $props();
 	let { session, supabase, user } = data;
 
+	let sidebarIsOpen = $state(false);
+
 	onMount(() => {
 		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
 			if (newSession?.expires_at !== session?.expires_at) {
@@ -23,9 +25,9 @@
 <Navigation {supabase} {user} />
 
 <div class="drawer drawer-end">
-	<input id="sidebar" type="checkbox" class="drawer-toggle" />
+	<input id="sidebar" type="checkbox" class="drawer-toggle" bind:checked={sidebarIsOpen} />
 	<div class="drawer-content">
 		<div class="container mx-auto">{@render children()}</div>
 	</div>
-	<SideBar />
+	<SideBar {supabase} bind:sidebarIsOpen />
 </div>

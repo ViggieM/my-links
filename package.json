@@ -38,6 +38,7 @@
 	"dependencies": {
 		"@supabase/ssr": "^0.5.2",
 		"@supabase/supabase-js": "^2.47.12",
-		"@tailwindcss/typography": "^0.5.16"
+		"@tailwindcss/typography": "^0.5.16",
+		"snarkdown": "^2.0.0"
 	}
 }
