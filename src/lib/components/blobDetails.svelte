@@ -37,26 +37,25 @@
 </script>
 
 {#if editing}
-	<input
-		type="text"
-		class="mb-4 border-0 bg-inherit text-3xl font-bold outline-base-300"
-		bind:value={title}
-	/>
-	<div class="mb-2 translate-y-[-5px] p-0.5">
-		<TagsSelectedList {selectedTagIds} {supabase}></TagsSelectedList>
-	</div>
-	<div class="mb-5">
-		<input type="url" class="w-full bg-inherit outline-base-300" bind:value={url} />
-	</div>
-	<div class="grid font-mono" style="grid-template-areas: 'stack'">
-		<textarea
-			style="grid-area: stack"
-			rows="5"
-			class="w-full overflow-y-scroll border-2 border-base-300 bg-inherit p-1 font-mono text-sm outline-base-300"
-			placeholder="Notes..."
-			bind:value={notes}
-		></textarea>
-		<pre class="invisible" style="grid-area: stack">{notes}</pre>
+	<div>
+		<input
+			type="text"
+			class="mb-4 border-0 bg-inherit text-3xl font-bold outline-base-300"
+			bind:value={title}
+		/>
+		<div class="mb-2 translate-y-[-5px] p-0.5">
+			<TagsSelectedList {selectedTagIds} {supabase}></TagsSelectedList>
+		</div>
+		<div class="mb-5">
+			<input type="url" class="w-full bg-inherit outline-base-300" bind:value={url} />
+		</div>
+		<div>
+			<textarea
+				class="field-sizing-content min-h-28 w-full overflow-y-scroll border-2 border-base-300 bg-inherit p-1 font-mono text-sm outline-base-300"
+				placeholder="Notes..."
+				bind:value={notes}
+			></textarea>
+		</div>
 	</div>
 {:else}
 	<article>
@@ -78,11 +77,11 @@
 	</article>
 {/if}
 
-<div class="mt-8">
+<div class="mt-10 flex gap-2">
 	{#if editing}
-		<button onclick={edit} class="btn btn-secondary">Discard</button>
-		<button class="btn btn-success" onclick={save}>Save</button>
+		<button onclick={edit} class="btn btn-warning flex-1">Discard changes</button>
+		<button class="btn btn-success flex-1" onclick={save}>Save</button>
 	{:else}
-		<button onclick={edit} class="btn btn-secondary">Edit</button>
+		<button onclick={edit} class="btn btn-info grow">Edit</button>
 	{/if}
 </div>
