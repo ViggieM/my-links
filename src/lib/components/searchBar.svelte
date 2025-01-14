@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { tags, orderTags } from '$lib/stores/tags.svelte';
 	import MultiSelect, { type ObjectOption } from 'svelte-multiselect';
-	import TagSlot from '$lib/components/TagSlot.svelte';
+	import TagSlot from '$lib/components/tagSlot.svelte';
 	import { optionFromTag } from '$lib';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
+	import { createBlobState, sidebarState } from '$lib/stores/sidebar.svelte';
+	import sidebarCreateBlob from '$lib/components/sidebarCreateBlob.svelte';
 
 	let { value = $bindable(), selectedTagIds }: { value: string; selectedTagIds: number[] } =
 		$props();
@@ -29,6 +31,25 @@
 		const lastHashIndex = input ? input.lastIndexOf('#') : -1;
 		return lastHashIndex === -1 ? input : input.slice(0, lastHashIndex).trim();
 	}
+
+	function onCreate() {
+		sidebarState.isOpen = true;
+		sidebarState.displayedComponent = sidebarCreateBlob;
+
+		const urlPattern = /^(https?:\/\/[^\s]+)$/; // Matches a basic URL format
+		const markdownLinkPattern = /^\[(.*)\]\((https?:\/\/[^\s]+)\)$/; // Matches a markdown link format
+
+		const value = searchInput?.value || '';
+		if (urlPattern.test(value)) {
+			createBlobState.url = value;
+		} else if (markdownLinkPattern.test(value)) {
+			const [_, title, url] = value.match(markdownLinkPattern);
+			createBlobState.title = title;
+			createBlobState.url = url;
+		} else {
+			createBlobState.title = value;
+		}
+	}
 </script>
 
 <div class="p-2">
@@ -47,6 +68,7 @@
 			class="rounded-e-full p-3 pr-4 hover:bg-secondary/50 hover:text-secondary-content"
 			title="Create"
 			aria-label="Create"
+			onclick={onCreate}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

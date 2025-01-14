@@ -5,42 +5,55 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import { setBlobTags } from '$lib/services/datastore';
 	import snarkdown from 'snarkdown';
+	import { sidebarState } from '$lib/stores/sidebar.svelte';
 
-	let { props, supabase, editing = $bindable() } = $props();
+	let { supabase } = $props();
+
+	// todo: typing
+	const { bookmark } = $derived(sidebarState.displayedComponentProps);
 
 	const selectedTagIds: SvelteSet<number> = $derived.by(() => {
-		return new SvelteSet(props.bookmark.tags.map((el) => el.id));
+		return new SvelteSet(bookmark.tags.map((el) => el.id));
 	});
+	let editing = $state(false);
 
-	let title = $state(props.bookmark.title);
-	let url = $state(props.bookmark.url);
-	let notes = $state(props.bookmark.notes);
+	let title = $state('');
+	let url = $state('');
+	let notes = $state('');
 
 	function edit() {
 		editing = !editing;
-		title = props.bookmark.title;
-		url = props.bookmark.url;
-		notes = props.bookmark.notes;
+		title = bookmark.title;
+		url = bookmark.url;
+		notes = bookmark.notes;
 	}
 
 	async function save() {
-		await supabase.from('blobs').update({ title, url, notes }).eq('uuid', props.bookmark.uuid);
+		await supabase.from('blobs').update({ title, url, notes }).eq('uuid', bookmark.uuid);
 
 		const tagIds = [...selectedTagIds];
-		await setBlobTags(supabase, props.bookmark.id, tagIds);
+		await setBlobTags(supabase, bookmark.id, tagIds);
 
 		editing = false;
-		props.bookmark.title = title;
-		props.bookmark.notes = notes;
-		props.bookmark.url = url;
+		bookmark.title = title;
+		bookmark.notes = notes;
+		bookmark.url = url;
 	}
+
+	$effect(() => {
+		// set editing to false when sidebar is being closed, but wait for a couple of ms for
+		// the sidebar to disappear from view
+		if (!sidebarState.isOpen && editing) {
+			setTimeout(() => (editing = false), 300);
+		}
+	});
 </script>
 
 {#if editing}
 	<div>
 		<input
 			type="text"
-			class="mb-4 border-0 bg-inherit text-3xl font-bold outline-base-300"
+			class="mb-4 w-full border-0 bg-inherit text-3xl font-bold outline-base-300"
 			bind:value={title}
 		/>
 		<div class="mb-2 translate-y-[-5px] p-0.5">
@@ -59,7 +72,7 @@
 	</div>
 {:else}
 	<article>
-		<h2 class="mb-4 text-3xl font-bold">{props.bookmark.title}</h2>
+		<h2 class="mb-4 text-3xl font-bold">{bookmark.title}</h2>
 		<div class="mb-5 flex gap-1.5">
 			{#each selectedTagIds as tagId (tagId)}
 				{@const tag = tags.get(tagId)}
@@ -67,11 +80,11 @@
 			{/each}
 		</div>
 		<div class="mb-5">
-			<span>{props.bookmark.url}</span>
+			<span>{bookmark.url}</span>
 		</div>
 		<div>
 			<article class="prose">
-				{@html snarkdown(props.bookmark.notes)}
+				{@html snarkdown(bookmark.notes)}
 			</article>
 		</div>
 	</article>

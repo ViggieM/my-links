@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getVisibleTagIds, tags, orderTags, Tag } from '$lib/stores/tags.svelte';
-	import TagSlot from '$lib/components/TagSlot.svelte';
+	import TagSlot from '$lib/components/tagSlot.svelte';
 	import MultiSelect, { type ObjectOption } from 'svelte-multiselect';
 	import { optionFromTag } from '$lib';
 
