@@ -1,20 +1,28 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { createBlobState, sidebarState } from '$lib/stores/sidebar.svelte';
 
-	let { form } = $props();
+	let { form, initialData } = $props();
+	let title = $state('');
+	let url = $state('');
+
+	const urlPattern = /^(https?:\/\/[^\s]+)$/; // Matches a basic URL format
+	const markdownLinkPattern = /^\[(.*)\]\((https?:\/\/[^\s]+)\)$/; // Matches a markdown link format
+
+	const value = initialData || '';
+	if (urlPattern.test(value)) {
+		url = value;
+	} else if (markdownLinkPattern.test(value)) {
+		const match = value.match(markdownLinkPattern);
+		title = match[1];
+		url = match[2];
+	} else {
+		title = value;
+	}
 </script>
 
 <form action="/blob/add?/create" method="post" class="form-control gap-2" use:enhance>
 	<label class="input input-bordered flex items-center gap-2">
-		<input
-			type="text"
-			name="title"
-			required
-			class="grow"
-			placeholder="Title"
-			bind:value={createBlobState.title}
-		/>
+		<input type="text" name="title" required class="grow" placeholder="Title" bind:value={title} />
 	</label>
 
 	<label class="input input-bordered flex items-center gap-2">
@@ -33,7 +41,7 @@
 			/>
 		</svg>
 
-		<input type="url" name="url" class="grow" placeholder="URL" bind:value={createBlobState.url} />
+		<input type="url" name="url" class="grow" placeholder="URL" bind:value={url} />
 	</label>
 
 	<div class="flex">

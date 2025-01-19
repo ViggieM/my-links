@@ -3,8 +3,6 @@
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import Navigation from '$lib/components/baseNavigation.svelte';
-	import SideBarDrawer from '$lib/components/baseSideBar.svelte';
-	import { sidebarState } from '$lib/stores/sidebar.svelte';
 
 	let { data, children } = $props();
 	let { session, supabase, user } = data;
@@ -23,10 +21,4 @@
 
 <Navigation {supabase} {user} />
 
-<div class="drawer drawer-end">
-	<input id="sidebar" type="checkbox" class="drawer-toggle" bind:checked={sidebarState.isOpen} />
-	<div class="drawer-content">
-		<div class="container mx-auto">{@render children()}</div>
-	</div>
-	<SideBarDrawer {supabase} />
-</div>
+<div class="container mx-auto">{@render children()}</div>

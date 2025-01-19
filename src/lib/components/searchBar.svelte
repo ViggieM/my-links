@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { tags, orderTags } from '$lib/stores/tags.svelte';
+	import Aside from '$lib/components/aside.svelte';
 	import MultiSelect, { type ObjectOption } from 'svelte-multiselect';
 	import TagSlot from '$lib/components/tagSlot.svelte';
 	import { optionFromTag } from '$lib';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { createBlobState, sidebarState } from '$lib/stores/sidebar.svelte';
-	import sidebarCreateBlob from '$lib/components/sidebarCreateBlob.svelte';
+	import BlobCreate from '$lib/components/blobCreate.svelte';
 
 	let { value = $bindable(), selectedTagIds }: { value: string; selectedTagIds: number[] } =
 		$props();
@@ -18,6 +18,7 @@
 	const options: ObjectOption[] = orderedTags.map(optionFromTag);
 	let selected: ObjectOption[] = $state(initialSelected);
 	let isOpen = $state(false);
+	let isAsideOpen = $state(false);
 	let selectInput: HTMLInputElement | null = $state(null);
 	let searchInput: HTMLInputElement | null = $state(null);
 
@@ -30,25 +31,6 @@
 	function trimToLastHash(input: string) {
 		const lastHashIndex = input ? input.lastIndexOf('#') : -1;
 		return lastHashIndex === -1 ? input : input.slice(0, lastHashIndex).trim();
-	}
-
-	function onCreate() {
-		sidebarState.isOpen = true;
-		sidebarState.displayedComponent = sidebarCreateBlob;
-
-		const urlPattern = /^(https?:\/\/[^\s]+)$/; // Matches a basic URL format
-		const markdownLinkPattern = /^\[(.*)\]\((https?:\/\/[^\s]+)\)$/; // Matches a markdown link format
-
-		const value = searchInput?.value || '';
-		if (urlPattern.test(value)) {
-			createBlobState.url = value;
-		} else if (markdownLinkPattern.test(value)) {
-			const [_, title, url] = value.match(markdownLinkPattern);
-			createBlobState.title = title;
-			createBlobState.url = url;
-		} else {
-			createBlobState.title = value;
-		}
 	}
 </script>
 
@@ -64,27 +46,33 @@
 			{onkeyup}
 		/>
 
-		<button
-			class="rounded-e-full p-3 pr-4 hover:bg-secondary/50 hover:text-secondary-content"
-			title="Create"
-			aria-label="Create"
-			onclick={onCreate}
-		>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke-width="1.5"
-				stroke="currentColor"
-				class="size-6"
+		<Aside bind:isOpen={isAsideOpen}>
+			<button
+				class="rounded-e-full p-3 pr-4 hover:bg-secondary/50 hover:text-secondary-content"
+				title="Create"
+				aria-label="Create"
+				onclick={() => (isAsideOpen = true)}
 			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-				/>
-			</svg>
-		</button>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="size-6"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+					/>
+				</svg>
+			</button>
+
+			{#snippet content()}
+				<BlobCreate initialData={value}></BlobCreate>
+			{/snippet}
+		</Aside>
 	</label>
 </div>
 

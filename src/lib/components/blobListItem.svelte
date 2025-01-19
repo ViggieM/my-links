@@ -1,19 +1,20 @@
 <script lang="ts">
 	import TagBadge from '$lib/components/tagBadge.svelte';
-	import blobDetails from '$lib/components/blobDetails.svelte';
-	import { sidebarState } from '$lib/stores/sidebar.svelte';
+	import BlobDetails from '$lib/components/blobDetails.svelte';
+	import Aside from './aside.svelte';
 
 	const { bookmark } = $props();
 
-	function openSidebar() {
-		sidebarState.displayedComponent = blobDetails;
-		sidebarState.displayedComponentProps = { bookmark };
-	}
+	let isOpen = $state(false);
 </script>
 
-<label for="sidebar" class="drawer-button cursor-pointer gap-2" onclick={openSidebar}>
-	{#if bookmark.url}
-		<span class="block">
+{#snippet content()}
+	<BlobDetails {bookmark} />
+{/snippet}
+
+<Aside bind:isOpen {content}>
+	<button class="flex h-full w-full flex-col" onclick={() => (isOpen = true)}>
+		{#if bookmark.url}
 			<a
 				href={bookmark.url}
 				target="_blank"
@@ -22,11 +23,11 @@
 			>
 				{bookmark.title}
 			</a>
+		{/if}
+		<span class="mt-2 block flex flex-wrap gap-1">
+			{#each bookmark.tags as tag (tag.id)}
+				<TagBadge {tag} />
+			{/each}
 		</span>
-	{/if}
-	<span class="mt-2 block flex flex-wrap gap-1">
-		{#each bookmark.tags as tag (tag.id)}
-			<TagBadge {tag} />
-		{/each}
-	</span>
-</label>
+	</button>
+</Aside>

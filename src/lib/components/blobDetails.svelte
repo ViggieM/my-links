@@ -5,12 +5,11 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import { setBlobTags } from '$lib/services/datastore';
 	import snarkdown from 'snarkdown';
-	import { sidebarState } from '$lib/stores/sidebar.svelte';
+	import { page } from '$app/state';
 
-	let { supabase } = $props();
+	let { bookmark } = $props();
 
-	// todo: typing
-	const { bookmark } = $derived(sidebarState.displayedComponentProps);
+	const supabase = page.data.supabase;
 
 	const selectedTagIds: SvelteSet<number> = $derived.by(() => {
 		return new SvelteSet(bookmark.tags.map((el) => el.id));
@@ -39,14 +38,6 @@
 		bookmark.notes = notes;
 		bookmark.url = url;
 	}
-
-	$effect(() => {
-		// set editing to false when sidebar is being closed, but wait for a couple of ms for
-		// the sidebar to disappear from view
-		if (!sidebarState.isOpen && editing) {
-			setTimeout(() => (editing = false), 300);
-		}
-	});
 </script>
 
 {#if editing}
