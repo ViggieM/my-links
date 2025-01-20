@@ -10,33 +10,61 @@ pnpx supabase start
 pnpm run dev
 ```
 
+### Useful commands
+
+```bash
+# pull the docker images locally
+pnpx supabase start
+# in case you forget the local credentials, you can display them again with this command
+pnpx supabase status
+# to link a local project to an existing supabase instance
+pnpx supabase link
+# to create an initial migration from the existing supabase instance
+pnpx supabase db diff -f initial_structure --linked
+# to create a dump from your local data
+pnpx supabase db dump --data-only -f supabase/seed.sql
+# apply changes locally
+pnpx supabase db reset
+# apply changes to remote supabase instance
+pnpx supabase db push --linked
+```
+
 ## Learnings
 
-### Server side Authentication with SvelteKit
+- `dotenvx` is not necessary, since vite reads the env variables on its own, see https://vite.dev/guide/env-and-mode.html#env-files .
+  Worth remembering that vite will never leak env variables that are prefixed with `VITE_` to the client.
 
-Followed Supabase's docs on this: https://supabase.com/docs/guides/auth/server-side/sveltekit.
+### SvelteKit
 
-### Social Authentication with Supabase
+* specifying the [adapter](https://kit.svelte.dev/docs/adapter-auto) for Svelte ("adapter-netlify" instead of "adapter-auto") improves build time
+* One can use @apply directives inside svelte components
+* transition:fly works with `{x: '100%'}`
 
-Followed the instructions in [Supabase Docs](https://supabase.com/docs/guides/auth/social-login/auth-google).
+### Supabase
+
+<details><summary>Social Authentication</summary>
+
+References:
+- [Setting up Server-Side Auth for SvelteKit | Supabase Docs](https://supabase.com/docs/guides/auth/server-side/sveltekit)
+- [How to setup supabase locally with OAUTH providers | Alberto Sadde](https://www.albertosadde.com/blog/local-auth-with-subapase/)
+- [Login with Google | Supabase Docs](https://supabase.com/docs/guides/auth/social-login/auth-google).
+
 I chose the option for Application code configuration, since it is more general, even though I would have probably been fine with Google's OneTap flow.
-
 [Custom domain](https://supabase.com/docs/guides/platform/custom-domains) is only available on paid plan, but is only for authentication window.
 I could still host on my domain, by pointing the DNS to the Netlify app.
 
-#### Troubleshooting
+**Troubleshooting**:
 
 - error code `email_address_not_authorized`: Supabase's SMTP service only allows to send emails to predefined recipients, see https://supabase.com/docs/guides/auth/auth-smtp.
   This can be avoided if a private SMTP server is configured
 - Authentication flow does not complete: [Redirect URLs](https://supabase.com/dashboard/project/kmhjxwhamrskryebsqbm/auth/url-configuration) require a trailing slash, e.g.:
   - `https://*.minimalistdjango.com/`
   - `https://*links-minimalistdjango.netlify.app/`
+- `pnpx supabase db push --linked` fails with "must be owner of table ...": see [cli - supabase db push as postgres user causes "ERROR: must be owner of table" · supabase · Discussion #6326](https://github.com/orgs/supabase/discussions/6326)
+</details>
 
-### Deployment on Netlify
 
-### Postgres
-
-#### Search tags
+<details><summary>Search in postgres with search_vector</summary>
 
 Searching tags works by creating an extra column 'search_vector' that contains a combination of a tag's name and alternative names.
 
@@ -83,38 +111,9 @@ begin
 end;
 $$ language plpgsql;
 ```
+</details>
 
-### Supabase
-
-```bash
-# pull the docker images locally
-pnpx supabase start
-# in case you forget the local credentials, you can display them again with this command
-pnpx supabase status
-# to link a local project to an existing supabase instance
-pnpx supabase link
-# to create an initial migration from the existing supabase instance
-pnpx supabase db diff -f initial_structure --linked
-# to create a dump from your local data
-pnpx supabase db dump --data-only -f supabase/seed.sql
-# apply changes locally
-pnpx supabase db reset
-# apply changes to remote supabase instance
-pnpx supabase db push --linked
-```
-
-#### Set up authentication locally
-
-Reference: [How to setup supabase locally with OAUTH providers | Alberto Sadde](https://www.albertosadde.com/blog/local-auth-with-subapase/)
-
-#### Troubleshooting
-
-- `pnpx supabase db push --linked` fails with "must be owner of table ...": see [cli - supabase db push as postgres user causes "ERROR: must be owner of table" · supabase · Discussion #6326](https://github.com/orgs/supabase/discussions/6326)
-
-#### Views
-
-[Tables and Data | Supabase Docs](https://supabase.com/docs/guides/database/tables?queryGroups=language&language=js#views)
-
+<details><summary>Optimize the landingpage with database views</summary>
 The query
 
 ```javascript
@@ -144,11 +143,17 @@ with
   );
 ```
 
-### Misc
+Resources:
+- [Tables and Data | Supabase Docs](https://supabase.com/docs/guides/database/tables?queryGroups=language&language=js#views)
 
-- `dotenvx` is not necessary, since vite reads the env variables on its own, see https://vite.dev/guide/env-and-mode.html#env-files .
-  Worth remembering that vite will never leak env variables that are prefixed with `VITE_` to the client.
-- specifying the [adapter](https://kit.svelte.dev/docs/adapter-auto) for Svelte ("adapter-netlify" instead of "adapter-auto") improves build time
+</details>
+
+<details><summary>Manage permissions with RLS</summary>
+
+I decided to try and manage permissions directly with RLS.
+For the beginning, I am only interested in the groups of an Admin, who can add, view and edit all blobs.
+A SECURITY DEFINER function allows to check the permissions on rows, without granting SELECT rights to users on the permission tables.
+</details>
 
 ## References
 
