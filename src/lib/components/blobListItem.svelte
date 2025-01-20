@@ -24,10 +24,10 @@
 				{bookmark.title}
 			</a>
 		{/if}
-		<span class="mt-2 block flex flex-wrap gap-1">
+		<div class="mt-2 flex flex-wrap gap-1">
 			{#each bookmark.tags as tag (tag.id)}
 				<TagBadge {tag} />
 			{/each}
-		</span>
+		</div>
 	</button>
 </Aside>

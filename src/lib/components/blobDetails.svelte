@@ -71,7 +71,7 @@
 			{/each}
 		</div>
 		<div class="mb-5">
-			<span>{bookmark.url}</span>
+			<a class="link block overflow-hidden truncate text-ellipsis w-full" target="_blank" href="{bookmark.url}" title="{bookmark.url}">{bookmark.url}</a>
 		</div>
 		<div>
 			<article class="prose">
